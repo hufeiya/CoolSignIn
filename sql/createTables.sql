@@ -39,12 +39,12 @@ create table Course
 
 create table SignInfo
 (
+	signID int not null primary key auto_increment,
 	cid int not null,
     sid int not null,
     signDetail varchar(100),
     signTimes int,
     lastSignPhoto varchar(50),
-    primary key(cid,sid),
     constraint Course_Sign foreign key(cid) references Course(cid),
     constraint Student_Sign foreign key(sid) references Student(sid)
 )

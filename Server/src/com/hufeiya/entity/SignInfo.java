@@ -8,7 +8,9 @@ public class SignInfo implements java.io.Serializable {
 
 	// Fields
 
-	private SignInfoId id;
+	private Integer signId;
+	private Student student;
+	private Course course;
 	private String signDetail;
 	private Integer signTimes;
 	private String lastSignPhoto;
@@ -20,14 +22,16 @@ public class SignInfo implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public SignInfo(SignInfoId id) {
-		this.id = id;
+	public SignInfo(Student student, Course course) {
+		this.student = student;
+		this.course = course;
 	}
 
 	/** full constructor */
-	public SignInfo(SignInfoId id, String signDetail, Integer signTimes,
-			String lastSignPhoto) {
-		this.id = id;
+	public SignInfo(Student student, Course course, String signDetail,
+			Integer signTimes, String lastSignPhoto) {
+		this.student = student;
+		this.course = course;
 		this.signDetail = signDetail;
 		this.signTimes = signTimes;
 		this.lastSignPhoto = lastSignPhoto;
@@ -35,12 +39,28 @@ public class SignInfo implements java.io.Serializable {
 
 	// Property accessors
 
-	public SignInfoId getId() {
-		return this.id;
+	public Integer getSignId() {
+		return this.signId;
 	}
 
-	public void setId(SignInfoId id) {
-		this.id = id;
+	public void setSignId(Integer signId) {
+		this.signId = signId;
+	}
+
+	public Student getStudent() {
+		return this.student;
+	}
+
+	public void setStudent(Student student) {
+		this.student = student;
+	}
+
+	public Course getCourse() {
+		return this.course;
+	}
+
+	public void setCourse(Course course) {
+		this.course = course;
 	}
 
 	public String getSignDetail() {

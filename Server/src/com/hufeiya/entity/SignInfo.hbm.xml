@@ -6,14 +6,16 @@
 -->
 <hibernate-mapping>
     <class name="com.hufeiya.entity.SignInfo" table="SignInfo" catalog="coolSignIn">
-        <composite-id name="id" class="com.hufeiya.entity.SignInfoId">
-            <key-many-to-one name="course" class="com.hufeiya.entity.Course">
-                <column name="cid" />
-            </key-many-to-one>
-            <key-many-to-one name="student" class="com.hufeiya.entity.Student">
-                <column name="sid" />
-            </key-many-to-one>
-        </composite-id>
+        <id name="signId" type="java.lang.Integer">
+            <column name="signID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="student" class="com.hufeiya.entity.Student" fetch="select">
+            <column name="sid" not-null="true" />
+        </many-to-one>
+        <many-to-one name="course" class="com.hufeiya.entity.Course" fetch="select">
+            <column name="cid" not-null="true" />
+        </many-to-one>
         <property name="signDetail" type="java.lang.String">
             <column name="signDetail" length="100" />
         </property>
