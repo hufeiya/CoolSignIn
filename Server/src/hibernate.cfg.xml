@@ -18,11 +18,11 @@
 			com.mysql.jdbc.Driver
 		</property>
 		<property name="myeclipse.connection.profile">
-			jdbc.driverClassName
+			mysqldriver
 		</property>
+		<mapping resource="com/hufeiya/entity/User.hbm.xml" />
 		<mapping resource="com/hufeiya/entity/StudentSheet.hbm.xml" />
 		<mapping resource="com/hufeiya/entity/Student.hbm.xml" />
-		<mapping resource="com/hufeiya/entity/User.hbm.xml" />
 		<mapping resource="com/hufeiya/entity/SignInfo.hbm.xml" />
 		<mapping resource="com/hufeiya/entity/Course.hbm.xml" />
 
