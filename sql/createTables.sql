@@ -47,4 +47,5 @@ create table SignInfo
     lastSignPhoto varchar(50),
     constraint Course_Sign foreign key(cid) references Course(cid),
     constraint Student_Sign foreign key(sid) references Student(sid)
-)
+);
+alter table User modify column pass varchar(32);//password use MD5
