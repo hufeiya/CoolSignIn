@@ -1,13 +1,13 @@
-package com.hufeiya.entity;
+package com.hufeiya.jsonObject;
 
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * User entity. @author MyEclipse Persistence Tools
- */
+import com.hufeiya.entity.Course;
+import com.hufeiya.entity.User;
 
-public class User implements java.io.Serializable {
+
+public class JsonUser {
 
 	// Fields
 
@@ -17,32 +17,37 @@ public class User implements java.io.Serializable {
 	private String userNo;
 	private String phone;
 	private Boolean userType;
-	private Set studentSheets = new HashSet(0);
-	private Set courses = new HashSet(0);
-
+	private Set<JsonCourse> jsonCourses = new HashSet<JsonCourse>();
 	// Constructors
 
 	/** default constructor */
-	public User() {
+	public JsonUser() {
 	}
 
 	/** full constructor */
-	public User(String username, String pass, String userNo, String phone,
-			Boolean userType, Set studentSheets, Set courses) {
+	public JsonUser(String username, String pass, String userNo, String phone,
+			Boolean userType) {
 		this.username = username;
 		this.pass = pass;
 		this.userNo = userNo;
 		this.phone = phone;
 		this.userType = userType;
-		this.studentSheets = studentSheets;
-		this.courses = courses;
 	}
 	
-	/**Login constructor*/
-	public User(String phone,String pass){
-		this.phone = phone;
-		this.pass = pass;
+	public JsonUser(User user){
+		this.uid = user.getUid();
+		this.username = user.getUsername();
+		this.pass = user.getPass();
+		this.userNo = user.getUserNo();
+		this.phone = user.getPhone();
+		this.userType = user.getUserType();
+		Set<Course> tempCouses = user.getCourses();
+		for(Course course:tempCouses){
+			JsonCourse tempJsonCourse = new JsonCourse(course);
+			this.jsonCourses.add(tempJsonCourse);
+		}
 	}
+
 	// Property accessors
 
 	public Integer getUid() {
@@ -69,6 +74,14 @@ public class User implements java.io.Serializable {
 		this.pass = pass;
 	}
 
+	public Set<JsonCourse> getJsonCourses() {
+		return jsonCourses;
+	}
+
+	public void setJsonCourses(Set<JsonCourse> jsonCourses) {
+		this.jsonCourses = jsonCourses;
+	}
+
 	public String getUserNo() {
 		return this.userNo;
 	}
@@ -91,22 +104,6 @@ public class User implements java.io.Serializable {
 
 	public void setUserType(Boolean userType) {
 		this.userType = userType;
-	}
-
-	public Set getStudentSheets() {
-		return this.studentSheets;
-	}
-
-	public void setStudentSheets(Set studentSheets) {
-		this.studentSheets = studentSheets;
-	}
-
-	public Set getCourses() {
-		return this.courses;
-	}
-
-	public void setCourses(Set courses) {
-		this.courses = courses;
 	}
 
 }

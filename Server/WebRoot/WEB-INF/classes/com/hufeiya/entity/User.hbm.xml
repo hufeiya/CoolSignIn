@@ -14,7 +14,7 @@
             <column name="username" length="10" />
         </property>
         <property name="pass" type="java.lang.String">
-            <column name="pass" length="10" />
+            <column name="pass" length="32" />
         </property>
         <property name="userNo" type="java.lang.String">
             <column name="userNo" length="20" />
