@@ -68,7 +68,7 @@ public class StudentDAO extends BaseHibernateDAO {
 		log.debug("finding Student instance by example");
 		try {
 			List results = getSession()
-					.createCriteria("com.hufeiya.DAO.Student")
+					.createCriteria(Student.class)
 					.add(Example.create(instance)).list();
 			log.debug("find by example successful, result size: "
 					+ results.size());

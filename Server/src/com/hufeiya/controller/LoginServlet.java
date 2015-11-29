@@ -48,7 +48,7 @@ public class LoginServlet extends HttpServlet {
         out.close();
 	}
 	public JsonUser userToJsonUser(User user){
-		 JsonUser jsonUser =  new JsonUser(user);;
+		 JsonUser jsonUser =  new JsonUser(user);
 		 if (user.getUserType() == IS_STUDENT){
 			Student example = new Student();
 			example.setStudentNo(user.getUserNo());

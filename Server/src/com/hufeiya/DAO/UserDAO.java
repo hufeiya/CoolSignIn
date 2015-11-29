@@ -67,7 +67,7 @@ public class UserDAO extends BaseHibernateDAO {
 	public List findByExample(User instance) {
 		log.debug("finding User instance by example");
 		try {
-			List results = getSession().createCriteria("com.hufeiya.DAO.User")
+			List results = getSession().createCriteria(User.class)
 					.add(Example.create(instance)).list();
 			log.debug("find by example successful, result size: "
 					+ results.size());

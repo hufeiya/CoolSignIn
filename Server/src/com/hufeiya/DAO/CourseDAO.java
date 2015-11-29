@@ -67,7 +67,7 @@ public class CourseDAO extends BaseHibernateDAO {
 		log.debug("finding Course instance by example");
 		try {
 			List results = getSession()
-					.createCriteria("com.hufeiya.DAO.Course")
+					.createCriteria(Course.class)
 					.add(Example.create(instance)).list();
 			log.debug("find by example successful, result size: "
 					+ results.size());

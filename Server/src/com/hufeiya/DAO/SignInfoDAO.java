@@ -67,7 +67,7 @@ public class SignInfoDAO extends BaseHibernateDAO {
 		log.debug("finding SignInfo instance by example");
 		try {
 			List results = getSession()
-					.createCriteria("com.hufeiya.DAO.SignInfo")
+					.createCriteria(SignInfo.class)
 					.add(Example.create(instance)).list();
 			log.debug("find by example successful, result size: "
 					+ results.size());
