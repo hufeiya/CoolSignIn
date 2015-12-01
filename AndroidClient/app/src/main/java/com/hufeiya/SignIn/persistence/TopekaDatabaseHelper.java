@@ -22,7 +22,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.hufeiya.SignIn.R;
@@ -189,8 +188,6 @@ public class TopekaDatabaseHelper extends SQLiteOpenHelper {
             category = jsonArray.getJSONObject(i);
             final String categoryId = category.getString(JsonAttributes.ID);
             fillCategory(db, values, category, categoryId);
-            final JSONArray quizzes = category.getJSONArray(JsonAttributes.QUIZZES);
-            fillQuizzesForCategory(db, values, quizzes, categoryId);
         }
     }
 
@@ -217,40 +214,7 @@ public class TopekaDatabaseHelper extends SQLiteOpenHelper {
         db.insert(CategoryTable.NAME, null, values);
     }
 
-    private void fillQuizzesForCategory(SQLiteDatabase db, ContentValues values, JSONArray quizzes,
-                                        String categoryId) throws JSONException {
-        JSONObject quiz;
-        for (int i = 0; i < quizzes.length(); i++) {
-            quiz = quizzes.getJSONObject(i);
-            values.clear();
-            values.put(QuizTable.FK_CATEGORY, categoryId);
-            values.put(QuizTable.COLUMN_TYPE, quiz.getString(JsonAttributes.TYPE));
-            values.put(QuizTable.COLUMN_QUESTION, quiz.getString(JsonAttributes.QUESTION));
-            values.put(QuizTable.COLUMN_ANSWER, quiz.getString(JsonAttributes.ANSWER));
-            putNonEmptyString(values, quiz, JsonAttributes.OPTIONS, QuizTable.COLUMN_OPTIONS);
-            putNonEmptyString(values, quiz, JsonAttributes.MIN, QuizTable.COLUMN_MIN);
-            putNonEmptyString(values, quiz, JsonAttributes.MAX, QuizTable.COLUMN_MAX);
-            putNonEmptyString(values, quiz, JsonAttributes.START, QuizTable.COLUMN_START);
-            putNonEmptyString(values, quiz, JsonAttributes.END, QuizTable.COLUMN_END);
-            putNonEmptyString(values, quiz, JsonAttributes.STEP, QuizTable.COLUMN_STEP);
-            db.insert(QuizTable.NAME, null, values);
-        }
-    }
 
-    /**
-     * Puts a non-empty string to ContentValues provided.
-     *
-     * @param values     The place where the data should be put.
-     * @param quiz       The quiz potentially containing the data.
-     * @param jsonKey    The key to look for.
-     * @param contentKey The key use for placing the data in the database.
-     */
-    private void putNonEmptyString(ContentValues values, JSONObject quiz, String jsonKey,
-                                   String contentKey) {
-        final String stringToPut = quiz.optString(jsonKey, null);
-        if (!TextUtils.isEmpty(stringToPut)) {
-            values.put(contentKey, stringToPut);
-        }
-    }
+
 
 }

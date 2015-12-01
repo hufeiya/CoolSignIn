@@ -16,8 +16,8 @@
 
 <resources>
     <string name="app_name">酷炫签到</string>
-    <string name="last_initial">学号/工号</string>
-    <string name="first_name">姓名</string>
+    <string name="last_initial">密码</string>
+    <string name="first_name">手机号</string>
     <string name="sign_in">登录</string>
     <string name="choose_avatar">选择头像</string>
     <string name="an_avatar">An Avatar</string>

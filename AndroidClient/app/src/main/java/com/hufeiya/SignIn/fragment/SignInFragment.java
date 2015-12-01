@@ -31,11 +31,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.Switch;
-import android.widget.TextView;
 
 import com.hufeiya.SignIn.R;
 import com.hufeiya.SignIn.activity.CategorySelectionActivity;
@@ -44,6 +41,7 @@ import com.hufeiya.SignIn.helper.PreferencesHelper;
 import com.hufeiya.SignIn.helper.TransitionHelper;
 import com.hufeiya.SignIn.model.Avatar;
 import com.hufeiya.SignIn.model.User;
+import com.hufeiya.SignIn.net.AsyncHttpHelper;
 
 /**
  * Enable selection of an {@link Avatar} and user name.
@@ -174,6 +172,9 @@ public class SignInFragment extends Fragment {
                                 }
                             }
                         });
+
+                        //TODO login test!!
+                        AsyncHttpHelper.login("18258254024","123456");
                         break;
                     default:
                         throw new UnsupportedOperationException(
@@ -182,18 +183,7 @@ public class SignInFragment extends Fragment {
                 }
             }
         });
-        final TextView userTypeText = (TextView)view.findViewById(R.id.userTypeText);
-        Switch userTypeSwich = (Switch)view.findViewById(R.id.userTypeSwitch);
-        userTypeSwich.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    userTypeText.setText("老师");
-                } else {
-                    userTypeText.setText("学生");
-                }
-            }
-        });
+
     }
 
     private void removeDoneFab(@Nullable Runnable endAction) {

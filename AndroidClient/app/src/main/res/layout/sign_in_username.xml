@@ -51,7 +51,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/first_name"
                 android:imeOptions="actionNext"
-                android:inputType="textCapWords"
+                android:inputType="number"
+                android:maxLength="11"
                 android:minHeight="?android:attr/actionBarSize"
                 android:textSize="@dimen/size_edit_text" />
     </android.support.design.widget.TextInputLayout>
@@ -72,34 +73,12 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/last_initial"
                 android:imeOptions="actionDone"
-                android:inputType="textNoSuggestions|textCapWords"
-                android:maxLength="1"
+                android:inputType="numberPassword"
+                android:maxLength="16"
                 android:minHeight="?android:attr/actionBarSize"
-                android:textSize="@dimen/size_edit_text" />
+                android:textSize="@dimen/size_edit_text"
+                />
     </android.support.design.widget.TextInputLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/spacing_double"
-        android:paddingTop="@dimen/spacing_micro"
-        android:paddingEnd="@dimen/spacing_double"
-        android:paddingBottom="@dimen/spacing_micro"
-        android:clipToPadding="false">
-        <TextView
-            android:id="@+id/userTypeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="学生"
-            android:layout_weight="1"
-            android:textSize="20sp"/>
-        <Switch
-            android:id="@+id/userTypeSwitch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="1"/>
-    </LinearLayout>
+
 
 </LinearLayout>
