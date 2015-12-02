@@ -39,13 +39,16 @@ import com.hufeiya.SignIn.R;
 import com.hufeiya.SignIn.fragment.CategorySelectionFragment;
 import com.hufeiya.SignIn.helper.ApiLevelHelper;
 import com.hufeiya.SignIn.helper.PreferencesHelper;
+import com.hufeiya.SignIn.jsonObject.JsonUser;
 import com.hufeiya.SignIn.model.User;
+import com.hufeiya.SignIn.net.AsyncHttpHelper;
 import com.hufeiya.SignIn.widget.AvatarView;
 
 
 public class CategorySelectionActivity extends AppCompatActivity {
 
     private static final String EXTRA_PLAYER = "player";
+    private User user;
 
     public static void start(Activity activity, User user, ActivityOptionsCompat options) {
         Intent starter = getStartIntent(activity, user);
@@ -69,7 +72,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_category_selection);
-        User user = getIntent().getParcelableExtra(EXTRA_PLAYER);
+        user = getIntent().getParcelableExtra(EXTRA_PLAYER);
         if (!PreferencesHelper.isSignedIn(this) && user != null) {
             PreferencesHelper.writeToPreferences(this, user);
         }
@@ -95,7 +98,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         final AvatarView avatarView = (AvatarView) toolbar.findViewById(R.id.avatar);
         avatarView.setAvatar(user.getAvatar().getDrawableId());
         //noinspection PrivateResource
-        ((TextView) toolbar.findViewById(R.id.title)).setText(getDisplayName(user));
+        ((TextView) toolbar.findViewById(R.id.title)).setText(getDisplayName());
     }
 
     @Override
@@ -134,9 +137,19 @@ public class CategorySelectionActivity extends AppCompatActivity {
         ActivityCompat.finishAfterTransition(this);
     }
 
-    private String getDisplayName(User user) {
-        return getString(R.string.player_display_name, user.getFirstName(),
-                user.getLastInitial());
+    private String getDisplayName() {
+        JsonUser user = AsyncHttpHelper.user;
+        if (user == null){
+            //TODO
+            return null;
+        }
+        String type;
+        if (user.getUserType()){
+            type = "同学";
+        }else{
+            type = "老师";
+        }
+        return  user.getUsername() + "  " + type;
     }
 
     private void attachCategoryGridFragment() {
@@ -153,6 +166,10 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
     private void setProgressBarVisibility(int visibility) {
         findViewById(R.id.progress).setVisibility(visibility);
+    }
+
+    public User getUser(){
+        return user;
     }
 }
 

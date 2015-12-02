@@ -28,13 +28,13 @@ import com.hufeiya.SignIn.model.User;
  */
 public class PreferencesHelper {
 
-    private static final String PLAYER_PREFERENCES = "playerPreferences";
-    private static final String PREFERENCE_FIRST_NAME = PLAYER_PREFERENCES + ".firstName";
-    private static final String PREFERENCE_LAST_INITIAL = PLAYER_PREFERENCES + ".lastInitial";
-    private static final String PREFERENCE_AVATAR = PLAYER_PREFERENCES + ".avatar";
+    private static final String USER_PREFERENCES = "playerPreferences";
+    private static final String PREFERENCE_PHONE = USER_PREFERENCES + ".phone";
+    private static final String PREFERENCE_PASS = USER_PREFERENCES + ".pass";
+    private static final String PREFERENCE_AVATAR = USER_PREFERENCES + ".avatar";
 
     private PreferencesHelper() {
-        //no instance
+        //no instancer
     }
 
     /**
@@ -45,8 +45,8 @@ public class PreferencesHelper {
      */
     public static void writeToPreferences(Context context, User user) {
         SharedPreferences.Editor editor = getEditor(context);
-        editor.putString(PREFERENCE_FIRST_NAME, user.getFirstName());
-        editor.putString(PREFERENCE_LAST_INITIAL, user.getLastInitial());
+        editor.putString(PREFERENCE_PHONE, user.getPhone());
+        editor.putString(PREFERENCE_PASS, user.getPass());
         editor.putString(PREFERENCE_AVATAR, user.getAvatar().name());
         editor.apply();
     }
@@ -59,8 +59,8 @@ public class PreferencesHelper {
      */
     public static User getPlayer(Context context) {
         SharedPreferences preferences = getSharedPreferences(context);
-        final String firstName = preferences.getString(PREFERENCE_FIRST_NAME, null);
-        final String lastInitial = preferences.getString(PREFERENCE_LAST_INITIAL, null);
+        final String firstName = preferences.getString(PREFERENCE_PHONE, null);
+        final String lastInitial = preferences.getString(PREFERENCE_PASS, null);
         final String avatarPreference = preferences.getString(PREFERENCE_AVATAR, null);
         final Avatar avatar;
         if (null != avatarPreference) {
@@ -82,8 +82,8 @@ public class PreferencesHelper {
      */
     public static void signOut(Context context) {
         SharedPreferences.Editor editor = getEditor(context);
-        editor.remove(PREFERENCE_FIRST_NAME);
-        editor.remove(PREFERENCE_LAST_INITIAL);
+        editor.remove(PREFERENCE_PHONE);
+        editor.remove(PREFERENCE_PASS);
         editor.remove(PREFERENCE_AVATAR);
         editor.apply();
     }
@@ -96,8 +96,8 @@ public class PreferencesHelper {
      */
     public static boolean isSignedIn(Context context) {
         final SharedPreferences preferences = getSharedPreferences(context);
-        return preferences.contains(PREFERENCE_FIRST_NAME) &&
-                preferences.contains(PREFERENCE_LAST_INITIAL) &&
+        return preferences.contains(PREFERENCE_PHONE) &&
+                preferences.contains(PREFERENCE_PASS) &&
                 preferences.contains(PREFERENCE_AVATAR);
     }
 
@@ -107,6 +107,6 @@ public class PreferencesHelper {
     }
 
     private static SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences(PLAYER_PREFERENCES, Context.MODE_PRIVATE);
+        return context.getSharedPreferences(USER_PREFERENCES, Context.MODE_PRIVATE);
     }
 }

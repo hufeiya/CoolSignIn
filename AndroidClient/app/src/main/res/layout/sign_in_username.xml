@@ -46,7 +46,7 @@
             android:transitionGroup="true"
             tools:ignore="UnusedAttribute,NewApi">
         <EditText
-                android:id="@+id/first_name"
+                android:id="@+id/phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/first_name"
@@ -68,7 +68,7 @@
             android:transitionGroup="true"
             tools:ignore="UnusedAttribute,NewApi">
         <EditText
-                android:id="@+id/last_initial"
+                android:id="@+id/pass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/last_initial"

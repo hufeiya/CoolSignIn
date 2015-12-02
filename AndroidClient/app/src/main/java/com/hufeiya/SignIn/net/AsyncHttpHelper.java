@@ -1,8 +1,11 @@
 package com.hufeiya.SignIn.net;
 
 import android.util.Log;
+import android.view.View;
 
 import com.google.gson.Gson;
+import com.hufeiya.SignIn.fragment.CategorySelectionFragment;
+import com.hufeiya.SignIn.fragment.SignInFragment;
 import com.hufeiya.SignIn.jsonObject.JsonUser;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -23,13 +26,52 @@ import cz.msebera.android.httpclient.Header;
 public class AsyncHttpHelper {
 
     private static AsyncHttpClient client = new AsyncHttpClient();
-    private static JsonUser user;
+    public static JsonUser user;
     private static String serverURL = "http://192.168.2.8:8089/Server/";
 
-    public static void login(String phone,String pass){
+    public static void login(String phone,String pass, final SignInFragment fragment){
         boolean isSucceed;
-        pass = md5(pass);
-        Log.d("login",pass);
+        final String md5pass = md5(pass);
+        Log.d("login",md5pass);
+        client.get(serverURL+"login?phone="+phone+"&pass="+md5pass,null,new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+                try {
+                    fragment.progressBar.setVisibility(View.GONE);
+                    String isSucceed = response.getString(0);
+                    if (isSucceed.equals("false")){
+                        fragment.toastLoginFail("account");
+
+                    }else{
+                        user = new Gson().fromJson(response.get(1).toString(),JsonUser.class);
+                        fragment.savePlayer(md5pass);
+                        fragment.enterTheCategorySelectionActivity();
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    fragment.toastLoginFail("json");
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                fragment.toastLoginFail("unknown");
+            }
+        });
+
+    }
+
+    public static void refrash(String phone,String pass, final CategorySelectionFragment fragment){
+
         client.get(serverURL+"login?phone="+phone+"&pass="+pass,null,new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -41,20 +83,24 @@ public class AsyncHttpHelper {
                 super.onSuccess(statusCode, headers, response);
                 try {
                     String isSucceed = response.getString(0);
-                    if (isSucceed == "false"){
-                        //TODO login fail.
+                    if (isSucceed.equals("false")){
+                        //TODO relogin
                     }else{
                         user = new Gson().fromJson(response.get(1).toString(),JsonUser.class);
-                        Log.d("login",user.getPhone());
-                        Log.d("login",user.getPass());
-                        Log.d("login",user.getUsername());
-                        Log.d("login",user.getUserNo());
-                        Log.d("login",user.toString());
+                        fragment.swipeRefreshLayout.setRefreshing(false);
                     }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    fragment.toastLoginFail("json");
                 }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                fragment.toastLoginFail("unknown");
             }
         });
 

@@ -157,7 +157,6 @@ public class TopekaDatabaseHelper extends SQLiteOpenHelper {
          * constraint on category id
          */
         db.execSQL(CategoryTable.CREATE);
-        db.execSQL(QuizTable.CREATE);
         preFillDatabase(db);
     }
 

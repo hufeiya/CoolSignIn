@@ -33,6 +33,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.hufeiya.SignIn.R;
 import com.hufeiya.SignIn.activity.CategorySelectionActivity;
@@ -51,13 +53,14 @@ public class SignInFragment extends Fragment {
     private static final String ARG_EDIT = "EDIT";
     private static final String KEY_SELECTED_AVATAR_INDEX = "selectedAvatarIndex";
     private User mUser;
-    private EditText mFirstName;
-    private EditText mLastInitial;
+    private EditText phone;
+    private EditText pass;
     private Avatar mSelectedAvatar = Avatar.ONE;
     private View mSelectedAvatarView;
     private GridView mAvatarGrid;
     private FloatingActionButton mDoneFab;
     private boolean edit;
+    public ProgressBar progressBar;
 
     public static SignInFragment newInstance(boolean edit) {
         Bundle args = new Bundle();
@@ -149,32 +152,22 @@ public class SignInFragment extends Fragment {
                 /* no-op */
             }
         };
-
-        mFirstName = (EditText) view.findViewById(R.id.first_name);
-        mFirstName.addTextChangedListener(textWatcher);
-        mLastInitial = (EditText) view.findViewById(R.id.last_initial);
-        mLastInitial.addTextChangedListener(textWatcher);
+        progressBar = (ProgressBar)view.findViewById(R.id.empty);
+        phone = (EditText) view.findViewById(R.id.phone);
+        phone.addTextChangedListener(textWatcher);
+        pass = (EditText) view.findViewById(R.id.pass);
+        pass.addTextChangedListener(textWatcher);
         mDoneFab = (FloatingActionButton) view.findViewById(R.id.done);
         mDoneFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.done:
-                        savePlayer(getActivity());
-                        removeDoneFab(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (null == mSelectedAvatarView) {
-                                    performSignInWithTransition(mAvatarGrid.getChildAt(
-                                            mSelectedAvatar.ordinal()));
-                                } else {
-                                    performSignInWithTransition(mSelectedAvatarView);
-                                }
-                            }
-                        });
 
-                        //TODO login test!!
-                        AsyncHttpHelper.login("18258254024","123456");
+
+                        progressBar.setVisibility(View.VISIBLE);
+
+                        AsyncHttpHelper.login(phone.getText().toString(),pass.getText().toString(),SignInFragment.this);
                         break;
                     default:
                         throw new UnsupportedOperationException(
@@ -224,8 +217,8 @@ public class SignInFragment extends Fragment {
     private void initContents() {
         assurePlayerInit();
         if (null != mUser) {
-            mFirstName.setText(mUser.getFirstName());
-            mLastInitial.setText(mUser.getLastInitial());
+            phone.setText(mUser.getPhone());
+            pass.setText(mUser.getPass());
             mSelectedAvatar = mUser.getAvatar();
         }
     }
@@ -236,10 +229,10 @@ public class SignInFragment extends Fragment {
         }
     }
 
-    private void savePlayer(Activity activity) {
-        mUser = new User(mFirstName.getText().toString(), mLastInitial.getText().toString(),
+    public void savePlayer(String md5pass) {
+        mUser = new User(phone.getText().toString(), md5pass,
                 mSelectedAvatar);
-        PreferencesHelper.writeToPreferences(activity, mUser);
+        PreferencesHelper.writeToPreferences(getActivity(), mUser);
     }
 
     /**
@@ -251,6 +244,30 @@ public class SignInFragment extends Fragment {
         int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_fab);
         int avatarPadding = getResources().getDimensionPixelSize(R.dimen.spacing_double);
         return mAvatarGrid.getWidth() / (avatarSize + avatarPadding);
+    }
+
+    public void toastLoginFail(String failType){
+        if (failType.equals("account")){
+            Toast.makeText(getActivity(),"蛤 (@[]@!!),账号或密码错误",Toast.LENGTH_SHORT).show();
+        }else if(failType.equals("unknown")){
+            Toast.makeText(getActivity(),"登录失败, ( ° △ °|||)︴ ,主人请检查下网络",Toast.LENGTH_SHORT).show();
+        }else if (failType.equals("json")){
+            Toast.makeText(getActivity(),"json解析错误,这是个bug额(⊙o⊙)…",Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    public void enterTheCategorySelectionActivity(){
+        removeDoneFab(new Runnable() {
+            @Override
+            public void run() {
+                if (null == mSelectedAvatarView) {
+                    performSignInWithTransition(mAvatarGrid.getChildAt(
+                            mSelectedAvatar.ordinal()));
+                } else {
+                    performSignInWithTransition(mSelectedAvatarView);
+                }
+            }
+        });
     }
 
 }

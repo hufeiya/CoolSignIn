@@ -31,7 +31,11 @@ public class LoginServlet extends HttpServlet {
         PrintWriter out = res.getWriter();
         String phone = req.getParameter("phone");
         String pass = req.getParameter("pass");
-        
+        if(phone == null || pass == null){
+        	out.print("[\"false\"]");
+        	out.close();
+        	return;
+        }
         User example = new User(phone,pass);
         UserDAO userDAO = new UserDAO();
         List resultUserList = userDAO.findByExample(example);

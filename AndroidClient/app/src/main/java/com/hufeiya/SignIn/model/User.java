@@ -20,7 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Stores values to identify the subject that is currently attempting to solve quizzes.
+ * Stores phone and md5 password to identify the server.
  */
 public class User implements Parcelable {
 
@@ -35,28 +35,28 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
-    private final String mFirstName;
-    private final String mLastInitial;
+    private final String mPhone;
+    private final String mPass;
     private final Avatar mAvatar;
 
-    public User(String firstName, String lastInitial, Avatar avatar) {
-        mFirstName = firstName;
-        mLastInitial = lastInitial;
+    public User(String phone, String pass, Avatar avatar) {
+        mPhone = phone;
+        mPass = pass;
         mAvatar = avatar;
     }
 
     protected User(Parcel in) {
-        mFirstName = in.readString();
-        mLastInitial = in.readString();
+        mPhone = in.readString();
+        mPass = in.readString();
         mAvatar = Avatar.values()[in.readInt()];
     }
 
-    public String getFirstName() {
-        return mFirstName;
+    public String getPhone() {
+        return mPhone;
     }
 
-    public String getLastInitial() {
-        return mLastInitial;
+    public String getPass() {
+        return mPass;
     }
 
     public Avatar getAvatar() {
@@ -70,8 +70,8 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mFirstName);
-        dest.writeString(mLastInitial);
+        dest.writeString(mPhone);
+        dest.writeString(mPass);
         dest.writeInt(mAvatar.ordinal());
     }
 
@@ -90,10 +90,10 @@ public class User implements Parcelable {
         if (mAvatar != user.mAvatar) {
             return false;
         }
-        if (!mFirstName.equals(user.mFirstName)) {
+        if (!mPhone.equals(user.mPhone)) {
             return false;
         }
-        if (!mLastInitial.equals(user.mLastInitial)) {
+        if (!mPass.equals(user.mPass)) {
             return false;
         }
 
@@ -102,8 +102,8 @@ public class User implements Parcelable {
 
     @Override
     public int hashCode() {
-        int result = mFirstName.hashCode();
-        result = 31 * result + mLastInitial.hashCode();
+        int result = mPhone.hashCode();
+        result = 31 * result + mPass.hashCode();
         result = 31 * result + mAvatar.hashCode();
         return result;
     }

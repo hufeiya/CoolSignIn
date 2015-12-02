@@ -23,17 +23,22 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.hufeiya.SignIn.R;
+import com.hufeiya.SignIn.activity.CategorySelectionActivity;
 import com.hufeiya.SignIn.activity.QuizActivity;
 import com.hufeiya.SignIn.adapter.CategoryAdapter;
 import com.hufeiya.SignIn.helper.TransitionHelper;
 import com.hufeiya.SignIn.model.Category;
 import com.hufeiya.SignIn.model.JsonAttributes;
+import com.hufeiya.SignIn.model.User;
+import com.hufeiya.SignIn.net.AsyncHttpHelper;
 import com.hufeiya.SignIn.widget.OffsetDecoration;
 
 
@@ -41,6 +46,7 @@ public class CategorySelectionFragment extends Fragment {
 
     private static final int REQUEST_CATEGORY = 0x2300;
     private CategoryAdapter mAdapter;
+    public SwipeRefreshLayout swipeRefreshLayout;
 
     public static CategorySelectionFragment newInstance() {
         return new CategorySelectionFragment();
@@ -50,10 +56,19 @@ public class CategorySelectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_categories, container, false);
+
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                User user = ((CategorySelectionActivity)getActivity()).getUser();
+                AsyncHttpHelper.refrash(user.getPhone(),user.getPass(),CategorySelectionFragment.this);
+            }
+        });
         setUpQuizGrid((RecyclerView) view.findViewById(R.id.categories));
         super.onViewCreated(view, savedInstanceState);
     }
@@ -107,5 +122,14 @@ public class CategorySelectionFragment extends Fragment {
                 REQUEST_CATEGORY,
                 transitionBundle);
     }
+    public void toastLoginFail(String failType){
+        if (failType.equals("account")){
+            Toast.makeText(getActivity(), "蛤 (@[]@!!),你需要重新登录", Toast.LENGTH_SHORT).show();
+        }else if(failType.equals("unknown")){
+            Toast.makeText(getActivity(),"刷新失败, ( ° △ °|||)︴ ,主人请检查下网络",Toast.LENGTH_SHORT).show();
+        }else if (failType.equals("json")){
+            Toast.makeText(getActivity(),"json解析错误,这是个bug额(⊙o⊙)…",Toast.LENGTH_SHORT).show();
+        }
 
+    }
 }
