@@ -33,7 +33,7 @@ public class Category implements Parcelable {
             return new Category[size];
         }
     };
-    private final String mName;
+    private  String mName;
     private final String mId;
     private final Theme mTheme;
 
@@ -115,5 +115,8 @@ public class Category implements Parcelable {
         result = 31 * result + mId.hashCode();
         result = 31 * result + mTheme.hashCode();
         return result;
+    }
+    public void setName(String name){
+        this.mName = name;
     }
 }

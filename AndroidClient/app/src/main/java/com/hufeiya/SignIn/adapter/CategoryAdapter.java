@@ -19,7 +19,6 @@ package com.hufeiya.SignIn.adapter;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -31,10 +30,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hufeiya.SignIn.R;
+import com.hufeiya.SignIn.jsonObject.JsonCourse;
 import com.hufeiya.SignIn.model.Category;
 import com.hufeiya.SignIn.model.Theme;
+import com.hufeiya.SignIn.net.AsyncHttpHelper;
 import com.hufeiya.SignIn.persistence.TopekaDatabaseHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
@@ -113,6 +115,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         return -1;
     }
 
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
     }
@@ -124,8 +127,17 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     }
 
-    private void updateCategories(Activity activity) {
+    public void updateCategories(Activity activity) {
         mCategories = TopekaDatabaseHelper.getCategories(activity, true);
+        if(AsyncHttpHelper.user != null){
+            List<JsonCourse> courses = new ArrayList<>();
+            courses.addAll(AsyncHttpHelper.user.getJsonCourses());
+            mCategories = mCategories.subList(0,courses.size());
+            for(int i = 0; i < mCategories.size();i++){
+                mCategories.get(i).setName(courses.get(i).getCourseName());
+            }
+        }
+
     }
 
     /**

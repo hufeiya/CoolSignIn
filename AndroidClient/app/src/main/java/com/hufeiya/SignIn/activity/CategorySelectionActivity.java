@@ -90,7 +90,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private void setUpToolbar(User user) {
+    public void setUpToolbar(User user) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_player);
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
@@ -140,8 +140,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private String getDisplayName() {
         JsonUser user = AsyncHttpHelper.user;
         if (user == null){
-            //TODO
-            return null;
+            return "登录中...";
         }
         String type;
         if (user.getUserType()){

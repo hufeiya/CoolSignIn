@@ -58,12 +58,12 @@ public class LoginServlet extends HttpServlet {
 			example.setStudentNo(user.getUserNo());
 			List<Student> students = new StudentDAO().findByExample(example);
 			if(students == null || students.size() == 0){		//This student haven't joined a course
+				jsonUser.setJsonCourses(null);
 				return jsonUser;
 			}
 			Student student = students.get(0);
 			SignInfo exampleInfo = new SignInfo();
-			exampleInfo.setStudent(student);
-			List<SignInfo>signInfos = new SignInfoDAO().findByExample(exampleInfo);
+			List<SignInfo>signInfos = new SignInfoDAO().findByProperty("student", student);
 			Set<JsonCourse>jsonCourses = new HashSet<JsonCourse>();
 			for(SignInfo signInfo: signInfos){
 				JsonSignInfo jsonSignInfo = new JsonSignInfo(signInfo);

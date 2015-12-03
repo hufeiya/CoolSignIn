@@ -61,15 +61,23 @@ public class CategorySelectionFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        final User user = ((CategorySelectionActivity)getActivity()).getUser();
         swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                User user = ((CategorySelectionActivity)getActivity()).getUser();
-                AsyncHttpHelper.refrash(user.getPhone(),user.getPass(),CategorySelectionFragment.this);
+
+                AsyncHttpHelper.refrash(user.getPhone(), user.getPass(), CategorySelectionFragment.this);
             }
         });
         setUpQuizGrid((RecyclerView) view.findViewById(R.id.categories));
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
+        AsyncHttpHelper.refrash(user.getPhone(), user.getPass(), CategorySelectionFragment.this);
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -131,5 +139,8 @@ public class CategorySelectionFragment extends Fragment {
             Toast.makeText(getActivity(),"json解析错误,这是个bug额(⊙o⊙)…",Toast.LENGTH_SHORT).show();
         }
 
+    }
+    public CategoryAdapter getmAdapter(){
+        return mAdapter;
     }
 }

@@ -53,4 +53,58 @@
     "theme": "purple",
     "solved": "false"
   }
+  {
+    "name": "Food & Drink",
+    "id": "food1",
+    "theme": "green",
+    "solved": "false"
+  },
+  {
+    "name": "General Knowledge",
+    "id": "knowledge1",
+    "theme": "yellow",
+    "solved": "true"
+  },
+  {
+    "name": "History",
+    "id": "history1",
+    "theme": "blue",
+    "solved": "false"
+  },
+  {
+    "name": "Geography",
+    "id": "geography1",
+    "theme": "red",
+    "solved": "false"
+  },
+  {
+    "name": "Science and Nature",
+    "id": "science1",
+    "theme": "green",
+    "solved": "false"
+  },
+  {
+    "name": "TV & Movies",
+    "id": "tvmovies1",
+    "theme": "purple",
+    "solved": "false"
+  },
+  {
+    "name": "Music",
+    "id": "music1",
+    "theme": "blue",
+    "solved": "false"
+  },
+  {
+    "name": "Entertainment",
+    "id": "entertainment1",
+    "theme": "red",
+    "solved": "false"
+  },
+  {
+    "name": "Sports",
+    "id": "sports1",
+    "theme": "purple",
+    "solved": "false"
+  }
 ]

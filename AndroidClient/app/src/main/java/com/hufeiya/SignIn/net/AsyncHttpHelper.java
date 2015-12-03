@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
+import com.hufeiya.SignIn.activity.CategorySelectionActivity;
 import com.hufeiya.SignIn.fragment.CategorySelectionFragment;
 import com.hufeiya.SignIn.fragment.SignInFragment;
 import com.hufeiya.SignIn.jsonObject.JsonUser;
@@ -88,6 +89,10 @@ public class AsyncHttpHelper {
                     }else{
                         user = new Gson().fromJson(response.get(1).toString(),JsonUser.class);
                         fragment.swipeRefreshLayout.setRefreshing(false);
+                        fragment.getmAdapter().updateCategories(fragment.getActivity());
+                        fragment.getmAdapter().notifyDataSetChanged();
+                        ((CategorySelectionActivity)fragment.getActivity()).setUpToolbar
+                                (((CategorySelectionActivity)fragment.getActivity()).getUser());
                     }
 
 
