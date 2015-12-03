@@ -29,7 +29,6 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Interpolator;
@@ -39,7 +38,6 @@ import android.widget.TextView;
 import com.hufeiya.SignIn.R;
 import com.hufeiya.SignIn.helper.ApiLevelHelper;
 import com.hufeiya.SignIn.model.Category;
-import com.hufeiya.SignIn.persistence.TopekaDatabaseHelper;
 import com.hufeiya.SignIn.widget.TextSharedElementCallback;
 
 import java.util.List;
@@ -59,6 +57,7 @@ public class QuizActivity extends AppCompatActivity {
     private boolean mSavedStateIsPlaying;
     private ImageView mIcon;
     private View mToolbarBack;
+    private static Category category;
 
 
     final View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -74,7 +73,8 @@ public class QuizActivity extends AppCompatActivity {
 
     public static Intent getStartIntent(Context context, Category category) {
         Intent starter = new Intent(context, QuizActivity.class);
-        starter.putExtra(Category.TAG, category.getId());
+        //starter.putExtra(Category.TAG, category.getId());
+        QuizActivity.category = category;
         return starter;
     }
 
@@ -86,7 +86,7 @@ public class QuizActivity extends AppCompatActivity {
             mSavedStateIsPlaying = savedInstanceState.getBoolean(STATE_IS_PLAYING);
         }
         super.onCreate(savedInstanceState);
-        populate(categoryId);
+        populate();
         int categoryNameTextSize = getResources()
                 .getDimensionPixelSize(R.dimen.category_item_text_size);
         int paddingStart = getResources().getDimensionPixelSize(R.dimen.spacing_double);
@@ -186,20 +186,15 @@ public class QuizActivity extends AppCompatActivity {
 
 
     @SuppressLint("NewApi")
-    private void populate(String categoryId) {
-        if (null == categoryId) {
-            Log.w(TAG, "Didn't find a category. Finishing");
-            finish();
-        }
-        mCategory = TopekaDatabaseHelper.getCategoryWith(this, categoryId);
-        setTheme(mCategory.getTheme().getStyleId());
+    private void populate() {
+        setTheme(category.getTheme().getStyleId());
         if (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
             Window window = getWindow();
             window.setStatusBarColor(ContextCompat.getColor(this,
-                    mCategory.getTheme().getPrimaryDarkColor()));
+                    category.getTheme().getPrimaryDarkColor()));
         }
-        initLayout(mCategory.getId());
-        initToolbar(mCategory);
+        initLayout(category.getId());
+        initToolbar(category);
     }
 
     private void initLayout(String categoryId) {

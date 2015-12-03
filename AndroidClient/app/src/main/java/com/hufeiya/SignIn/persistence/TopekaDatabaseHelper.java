@@ -124,22 +124,6 @@ public class TopekaDatabaseHelper extends SQLiteOpenHelper {
         return new Category(name, id, theme);
     }
 
-    /**
-     * Looks for a category with a given id.
-     *
-     * @param context    The context this is running in.
-     * @param categoryId Id of the category to look for.
-     * @return The found category.
-     */
-    public static Category getCategoryWith(Context context, String categoryId) {
-        SQLiteDatabase readableDatabase = getReadableDatabase(context);
-        String[] selectionArgs = {categoryId};
-        Cursor data = readableDatabase
-                .query(CategoryTable.NAME, CategoryTable.PROJECTION, CategoryTable.COLUMN_ID + "=?",
-                        selectionArgs, null, null, null);
-        data.moveToFirst();
-        return getCategory(data, readableDatabase);
-    }
 
 
     private static SQLiteDatabase getReadableDatabase(Context context) {
