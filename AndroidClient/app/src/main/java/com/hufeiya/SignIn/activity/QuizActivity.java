@@ -33,7 +33,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Interpolator;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hufeiya.SignIn.R;
@@ -42,8 +41,6 @@ import com.hufeiya.SignIn.model.Category;
 import com.hufeiya.SignIn.widget.TextSharedElementCallback;
 
 import java.util.List;
-
-import static com.hufeiya.SignIn.adapter.CategoryAdapter.DRAWABLE;
 
 
 public class QuizActivity extends AppCompatActivity {
@@ -55,7 +52,6 @@ public class QuizActivity extends AppCompatActivity {
     private Interpolator mInterpolator;
     private FloatingActionButton mQuizFab;
     private boolean mSavedStateIsPlaying;
-    private ImageView mIcon;
     private View mToolbarBack;
     private static Category category;
 
@@ -132,7 +128,7 @@ public class QuizActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mIcon == null || mQuizFab == null) {
+        if ( mQuizFab == null) {
             // Skip the animation if icon or fab are not initialized.
             super.onBackPressed();
             return;
@@ -145,13 +141,7 @@ public class QuizActivity extends AppCompatActivity {
                 .setDuration(100)
                 .start();
 
-        // Scale the icon and fab to 0 size before calling onBackPressed if it exists.
-        ViewCompat.animate(mIcon)
-                .scaleX(.7f)
-                .scaleY(.7f)
-                .alpha(0f)
-                .setInterpolator(mInterpolator)
-                .start();
+
 
         ViewCompat.animate(mQuizFab)
                 .scaleX(0f)
@@ -197,18 +187,6 @@ public class QuizActivity extends AppCompatActivity {
 
     private void initLayout(String categoryId) {
         setContentView(R.layout.activity_quiz);
-        //noinspection PrivateResource
-        mIcon = (ImageView) findViewById(R.id.icon);
-        int resId = getResources().getIdentifier(IMAGE_CATEGORY + categoryId, DRAWABLE,
-                getApplicationContext().getPackageName());
-        mIcon.setImageResource(resId);
-        ViewCompat.animate(mIcon)
-                .scaleX(1)
-                .scaleY(1)
-                .alpha(1)
-                .setInterpolator(mInterpolator)
-                .setStartDelay(300)
-                .start();
         mQuizFab = (FloatingActionButton) findViewById(R.id.fab_quiz);
         mQuizFab.setImageResource(R.drawable.ic_play);
         if (mSavedStateIsPlaying) {
