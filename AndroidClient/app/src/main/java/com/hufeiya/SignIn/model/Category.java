@@ -44,6 +44,12 @@ public class Category implements Parcelable {
         mTheme = theme;
     }
 
+    public Category(Category category) {
+        mName = category.getName();
+        mId = category.getId();
+        mTheme = category.getTheme();
+    }
+
     protected Category(Parcel in) {
         mName = in.readString();
         mId = in.readString();

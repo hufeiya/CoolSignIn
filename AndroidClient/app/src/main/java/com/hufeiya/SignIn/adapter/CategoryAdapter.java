@@ -129,6 +129,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     public void updateCategories(Activity activity) {
         mCategories = TopekaDatabaseHelper.getCategories(activity, true);
+        Category addCourse = new Category(mCategories.get(mCategories.size()-1));
         if(AsyncHttpHelper.user != null){
             List<JsonCourse> courses = new ArrayList<>();
             courses.addAll(AsyncHttpHelper.user.getJsonCourses());
@@ -136,8 +137,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             for(int i = 0; i < mCategories.size();i++){
                 mCategories.get(i).setName(courses.get(i).getCourseName());
             }
+        }else{
+            mCategories = new ArrayList<>();
         }
-
+        mCategories.add(addCourse);
     }
 
     /**

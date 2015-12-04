@@ -167,9 +167,11 @@ public class TopekaDatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues(); // reduce, reuse
         JSONArray jsonArray = new JSONArray(readCategoriesFromResources());
         JSONObject category;
+        Log.d("category","json size is " + jsonArray.length());
         for (int i = 0; i < jsonArray.length(); i++) {
             category = jsonArray.getJSONObject(i);
             final String categoryId = category.getString(JsonAttributes.ID);
+            Log.d("category",categoryId);
             fillCategory(db, values, category, categoryId);
         }
     }
@@ -193,7 +195,6 @@ public class TopekaDatabaseHelper extends SQLiteOpenHelper {
         values.put(CategoryTable.COLUMN_NAME, category.getString(JsonAttributes.NAME));
         values.put(CategoryTable.COLUMN_THEME, category.getString(JsonAttributes.THEME));
         values.put(CategoryTable.COLUMN_SOLVED, category.getString(JsonAttributes.SOLVED));
-        values.put(CategoryTable.COLUMN_SCORES, category.getString(JsonAttributes.SCORES));
         db.insert(CategoryTable.NAME, null, values);
     }
 

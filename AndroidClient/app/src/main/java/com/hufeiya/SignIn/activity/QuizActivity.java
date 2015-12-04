@@ -29,6 +29,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Interpolator;
@@ -52,7 +53,6 @@ public class QuizActivity extends AppCompatActivity {
     private static final String STATE_IS_PLAYING = "isPlaying";
 
     private Interpolator mInterpolator;
-    private Category mCategory;
     private FloatingActionButton mQuizFab;
     private boolean mSavedStateIsPlaying;
     private ImageView mIcon;
@@ -73,14 +73,12 @@ public class QuizActivity extends AppCompatActivity {
 
     public static Intent getStartIntent(Context context, Category category) {
         Intent starter = new Intent(context, QuizActivity.class);
-        //starter.putExtra(Category.TAG, category.getId());
         QuizActivity.category = category;
         return starter;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String categoryId = getIntent().getStringExtra(Category.TAG);
         mInterpolator = new FastOutSlowInInterpolator();
         if (null != savedInstanceState) {
             mSavedStateIsPlaying = savedInstanceState.getBoolean(STATE_IS_PLAYING);
@@ -204,7 +202,6 @@ public class QuizActivity extends AppCompatActivity {
         int resId = getResources().getIdentifier(IMAGE_CATEGORY + categoryId, DRAWABLE,
                 getApplicationContext().getPackageName());
         mIcon.setImageResource(resId);
-        mIcon.setImageResource(resId);
         ViewCompat.animate(mIcon)
                 .scaleX(1)
                 .scaleY(1)
@@ -235,5 +232,15 @@ public class QuizActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("quiz","onDestory() executed!!");
+    }
 }
