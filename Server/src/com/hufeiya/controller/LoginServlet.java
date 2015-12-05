@@ -62,7 +62,6 @@ public class LoginServlet extends HttpServlet {
 				return jsonUser;
 			}
 			Student student = students.get(0);
-			SignInfo exampleInfo = new SignInfo();
 			List<SignInfo>signInfos = new SignInfoDAO().findByProperty("student", student);
 			Set<JsonCourse>jsonCourses = new HashSet<JsonCourse>();
 			for(SignInfo signInfo: signInfos){
