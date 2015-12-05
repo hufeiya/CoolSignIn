@@ -18,6 +18,8 @@ package com.hufeiya.SignIn.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -35,11 +37,22 @@ import com.hufeiya.SignIn.activity.CategorySelectionActivity;
 import com.hufeiya.SignIn.activity.QuizActivity;
 import com.hufeiya.SignIn.adapter.CategoryAdapter;
 import com.hufeiya.SignIn.helper.TransitionHelper;
+import com.hufeiya.SignIn.jsonObject.JsonUser;
 import com.hufeiya.SignIn.model.Category;
 import com.hufeiya.SignIn.model.JsonAttributes;
 import com.hufeiya.SignIn.model.User;
 import com.hufeiya.SignIn.net.AsyncHttpHelper;
 import com.hufeiya.SignIn.widget.OffsetDecoration;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 
 public class CategorySelectionFragment extends Fragment {
@@ -47,6 +60,7 @@ public class CategorySelectionFragment extends Fragment {
     private static final int REQUEST_CATEGORY = 0x2300;
     private CategoryAdapter mAdapter;
     public SwipeRefreshLayout swipeRefreshLayout;
+    private Drawer drawer;
 
     public static CategorySelectionFragment newInstance() {
         return new CategorySelectionFragment();
@@ -142,5 +156,94 @@ public class CategorySelectionFragment extends Fragment {
     }
     public CategoryAdapter getmAdapter(){
         return mAdapter;
+    }
+
+    public void setDrawer(){
+        if (drawer != null){
+            return;
+        }
+        JsonUser user = AsyncHttpHelper.user;
+        if (user.getUserType()){
+            setStudentDrawer(user);
+        }else{
+            setTeacherDrawer(user);
+        }
+
+    }
+    private void setStudentDrawer(JsonUser user){
+        // Create the AccountHeader
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(getActivity())
+                .withHeaderBackground(new ColorDrawable(Color.BLUE))
+                .addProfiles(
+                        new ProfileDrawerItem().withName(user.getUsername()).withEmail(user.getUserNo()).
+                                withIcon(getResources().getDrawable(R.drawable.avatar_10))
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .build();
+        PrimaryDrawerItem index = new PrimaryDrawerItem().withName("主页");
+        SecondaryDrawerItem mySignItem = new SecondaryDrawerItem().withName("我的签到");
+
+
+//create the drawer and remember the `Drawer` result object
+        drawer = new DrawerBuilder()
+                .withAccountHeader(headerResult)
+                .withActivity(getActivity())
+                .addDrawerItems(
+                        index,
+                        new DividerDrawerItem(),
+                        mySignItem
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        return true;
+                    }
+                })
+                .build();
+    }
+    private void setTeacherDrawer(JsonUser user){
+        // Create the AccountHeader
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(getActivity())
+                .withHeaderBackground(new ColorDrawable(Color.BLUE))
+                .addProfiles(
+                        new ProfileDrawerItem().withName(user.getUsername()).withEmail(user.getUserNo()).
+                                withIcon(getResources().getDrawable(R.drawable.avatar_10))
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .build();
+        PrimaryDrawerItem index = new PrimaryDrawerItem().withName("主页");
+        SecondaryDrawerItem studentSheetItem = new SecondaryDrawerItem().withName("学生名单");
+
+
+//create the drawer and remember the `Drawer` result object
+        drawer = new DrawerBuilder()
+                .withAccountHeader(headerResult)
+                .withActivity(getActivity())
+                .addDrawerItems(
+                        index,
+                        new DividerDrawerItem(),
+                        studentSheetItem
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        return true;
+                    }
+                })
+                .build();
     }
 }

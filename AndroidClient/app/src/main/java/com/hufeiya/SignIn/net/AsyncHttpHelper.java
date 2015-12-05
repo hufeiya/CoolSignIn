@@ -93,6 +93,8 @@ public class AsyncHttpHelper {
                         fragment.getmAdapter().notifyDataSetChanged();
                         ((CategorySelectionActivity)fragment.getActivity()).setUpToolbar
                                 (((CategorySelectionActivity)fragment.getActivity()).getUser());
+                        fragment.setDrawer();
+
                     }
 
 

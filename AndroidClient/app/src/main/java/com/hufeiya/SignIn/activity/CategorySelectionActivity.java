@@ -43,6 +43,16 @@ import com.hufeiya.SignIn.jsonObject.JsonUser;
 import com.hufeiya.SignIn.model.User;
 import com.hufeiya.SignIn.net.AsyncHttpHelper;
 import com.hufeiya.SignIn.widget.AvatarView;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 
 public class CategorySelectionActivity extends AppCompatActivity {
@@ -83,6 +93,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
             setProgressBarVisibility(View.GONE);
         }
         supportPostponeEnterTransition();
+
     }
 
     @Override
