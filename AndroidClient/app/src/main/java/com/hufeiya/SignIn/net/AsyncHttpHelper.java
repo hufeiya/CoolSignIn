@@ -5,11 +5,13 @@ import android.view.View;
 
 import com.google.gson.Gson;
 import com.hufeiya.SignIn.activity.CategorySelectionActivity;
+import com.hufeiya.SignIn.application.MyApplication;
 import com.hufeiya.SignIn.fragment.CategorySelectionFragment;
 import com.hufeiya.SignIn.fragment.SignInFragment;
 import com.hufeiya.SignIn.jsonObject.JsonUser;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.PersistentCookieStore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +31,11 @@ public class AsyncHttpHelper {
     private static AsyncHttpClient client = new AsyncHttpClient();
     public static JsonUser user;
     private static String serverURL = "http://192.168.2.8:8089/Server/";
+    private static PersistentCookieStore myCookieStore = new PersistentCookieStore(MyApplication.getContext());
+    static {
+        client.setCookieStore(myCookieStore);
+    }
+
 
     public static void login(String phone,String pass, final SignInFragment fragment){
         boolean isSucceed;
@@ -72,8 +79,8 @@ public class AsyncHttpHelper {
     }
 
     public static void refrash(String phone,String pass, final CategorySelectionFragment fragment){
-
-        client.get(serverURL+"login?phone="+phone+"&pass="+pass,null,new JsonHttpResponseHandler(){
+        String httpParameters = "login?phone="+phone+"&pass="+pass;
+        client.get(serverURL+httpParameters,null,new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
