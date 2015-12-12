@@ -1,5 +1,7 @@
 package com.hufeiya.jsonObject;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.hufeiya.entity.Course;
@@ -9,10 +11,12 @@ public class JsonCourse {
 		// Fields
 
 		private Integer cid;
+		private Integer uid;
+		private String teacherName;
 		private String courseName;
 		private String startDates;
 		private Integer numberOfWeeks;
-		private Set<JsonSignInfo> signInfos = new HashSet<JsonSignInfo>();
+		private Map<Integer, JsonSignInfo> signInfos = new HashMap<>();
 
 		// Constructors
 
@@ -22,7 +26,7 @@ public class JsonCourse {
 
 		/** full constructor */
 		public JsonCourse(String courseName, String startDates,
-				Integer numberOfWeeks, Set signInfos) {
+				Integer numberOfWeeks, Map signInfos) {
 			this.courseName = courseName;
 			this.startDates = startDates;
 			this.numberOfWeeks = numberOfWeeks;
@@ -30,23 +34,28 @@ public class JsonCourse {
 		}
 		
 		public JsonCourse(Course course){
+			this.cid = course.getCid();
+			this.uid = course.getUser().getUid();
+			this.teacherName = course.getUser().getUsername();
 			this.courseName = course.getCourseName();
 			this.startDates = course.getStartDates();
 			this.numberOfWeeks = course.getNumberOfWeeks();
 			Set<SignInfo> temp = course.getSignInfos();
 			for(SignInfo signInfo:temp){
 				JsonSignInfo jsonSignInfo = new JsonSignInfo(signInfo);
-				this.signInfos.add(jsonSignInfo);
+				this.signInfos.put(jsonSignInfo.getSignId(), jsonSignInfo);
 			}
 			
 		}
 		
 		/**used for student user*/
 		public JsonCourse(Course course,JsonSignInfo jsonSignInfo){
+			this.cid = course.getCid();
+			this.teacherName = course.getUser().getUsername();
 			this.courseName = course.getCourseName();
 			this.startDates = course.getStartDates();
 			this.numberOfWeeks = course.getNumberOfWeeks();
-			this.getSignInfos().add(jsonSignInfo);
+			this.getSignInfos().put(jsonSignInfo.getSignId(), jsonSignInfo);
 			
 		}
 
@@ -83,12 +92,28 @@ public class JsonCourse {
 			this.numberOfWeeks = numberOfWeeks;
 		}
 
-		public Set getSignInfos() {
+		public Map<Integer, JsonSignInfo> getSignInfos() {
 			return this.signInfos;
 		}
 
-		public void setSignInfos(Set signInfos) {
+		public void setSignInfos(Map<Integer, JsonSignInfo> signInfos) {
 			this.signInfos = signInfos;
+		}
+
+		public Integer getUid() {
+			return uid;
+		}
+
+		public void setUid(Integer uid) {
+			this.uid = uid;
+		}
+
+		public String getTeacherName() {
+			return teacherName;
+		}
+
+		public void setTeacherName(String teacherName) {
+			this.teacherName = teacherName;
 		}
 
 	}

@@ -29,4 +29,7 @@
     <string name="sign_out">退出</string>
     <string name="x_points">%1$d pts</string>
     <string name="back">back</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

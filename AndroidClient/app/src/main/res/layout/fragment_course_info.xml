@@ -1,0 +1,85 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hufeiya.SignIn.fragment.CourseInfoFragment"
+    >
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        >
+
+        <LinearLayout
+            android:padding="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <TextView
+                style="@style/DisplayCourseText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="课程号:"/>
+            <TextView
+                style="@style/DisplayCourseValue"
+                android:id="@+id/courseId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:padding="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <TextView
+                style="@style/DisplayCourseText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="任课老师:"/>
+            <TextView
+                style="@style/DisplayCourseValue"
+                android:id="@+id/teacherName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:padding="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <TextView
+                style="@style/DisplayCourseText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="签到时间:"/>
+            <TextView
+                style="@style/DisplayCourseValue"
+                android:id="@+id/signTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:padding="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <TextView
+                style="@style/DisplayCourseText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周数:"/>
+            <TextView
+                style="@style/DisplayCourseValue"
+                android:id="@+id/timesOfWeeks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

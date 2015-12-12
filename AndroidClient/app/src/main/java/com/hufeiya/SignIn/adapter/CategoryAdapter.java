@@ -38,6 +38,7 @@ import com.hufeiya.SignIn.persistence.TopekaDatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
@@ -71,7 +72,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         Theme theme = category.getTheme();
         setCategoryIcon(category, holder.icon);
         holder.itemView.setBackgroundColor(getColor(theme.getWindowBackgroundColor()));
-        holder.title.setText(category.getName());
+        if (AsyncHttpHelper.user != null){
+            if( position != mCategories.size()-1){
+                holder.title.setText(AsyncHttpHelper.user.getJsonCoursesMap().get(Integer.parseInt(category.getName())).getCourseName());
+            }else{
+                holder.title.setText(category.getName());
+            }
+
+        }
+
         holder.title.setTextColor(getColor(theme.getTextPrimaryColor()));
         holder.title.setBackgroundColor(getColor(theme.getPrimaryColor()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -131,12 +140,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         mCategories = TopekaDatabaseHelper.getCategories(activity, true);
         Category addCourse = new Category(mCategories.get(mCategories.size()-1));
         if(AsyncHttpHelper.user != null){
-            List<JsonCourse> courses = new ArrayList<>();
-            courses.addAll(AsyncHttpHelper.user.getJsonCourses());
-            mCategories = mCategories.subList(0,courses.size());
-            for(int i = 0; i < mCategories.size();i++){
-                mCategories.get(i).setName(courses.get(i).getCourseName());
+            Map<Integer,JsonCourse> courseMap = AsyncHttpHelper.user.getJsonCoursesMap();
+            int i = 0;
+            for(Integer cid : courseMap.keySet()){
+                mCategories.get(i++).setName(cid.toString());
             }
+            mCategories = mCategories.subList(0,i);
         }else{
             mCategories = new ArrayList<>();
         }

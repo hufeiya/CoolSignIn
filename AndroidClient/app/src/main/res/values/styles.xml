@@ -135,5 +135,11 @@
 
     <style name="Topeka.TextAppearance.ListItem" parent="TextAppearance.AppCompat.Subhead" />
     <style name="Topeka.TextAppearance.ListItemSecondary" parent="TextAppearance.AppCompat.Body1" />
+    <style name="DisplayCourseText">
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="DisplayCourseValue">
+        <item name="android:textSize">20sp</item>
+    </style>
 
 </resources>

@@ -146,4 +146,8 @@ public class AsyncHttpHelper {
         }
         return hex.toString();
     }
+
+    public static void clearAllCookies(){
+        myCookieStore.clear();
+    }
 }

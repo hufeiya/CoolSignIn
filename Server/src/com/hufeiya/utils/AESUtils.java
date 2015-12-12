@@ -8,8 +8,8 @@ import org.apache.tomcat.util.codec.binary.Base64;
 
 public class AESUtils {
 	static String IV = "AAAAAAAAAAAAAAAA";
-	static final int PADDING = 10000000; // If my users are more than 9000W.It
-											// breaks.Hope it be true
+	// If my users are more than 9000W.It  breaks.Hope it be true
+	static final int PADDING = 10000000; 
 	static String encryptionKey = "0123456789abcdef";
 	static String STRINGPADDING = "\0\0\0\0\0\0\0\0";
 	static final int INVALID_VALUE = -1;
@@ -39,7 +39,8 @@ public class AESUtils {
 		String targetString = Integer.toString(target);
 		targetString += STRINGPADDING;
 		try {
-			return new String(Base64.encodeBase64(encrypt(targetString, encryptionKey)));
+			return new String(Base64.encodeBase64(encrypt(targetString,
+					encryptionKey)));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -47,7 +48,7 @@ public class AESUtils {
 		}
 	}
 
-	public static int decrypt(String encryptedString)  {
+	public static int decrypt(String encryptedString) {
 		byte[] decodedBytes;
 		decodedBytes = Base64.decodeBase64(encryptedString);
 		try {

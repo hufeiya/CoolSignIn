@@ -36,6 +36,7 @@ public class JsonSignInfo {
 	}
 	
 	public JsonSignInfo(SignInfo s) {
+		this.setSignId(s.getSignId());
 		this.setStudentName(s.getStudent().getStudentName());
 		this.setStudengNo(s.getStudent().getStudentNo());
 		this.signDetail = s.getSignDetail();

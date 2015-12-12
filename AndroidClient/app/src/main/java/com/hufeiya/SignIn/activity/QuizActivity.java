@@ -17,6 +17,7 @@
 package com.hufeiya.SignIn.activity;
 
 import android.annotation.SuppressLint;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -36,8 +37,10 @@ import android.view.animation.Interpolator;
 import android.widget.TextView;
 
 import com.hufeiya.SignIn.R;
+import com.hufeiya.SignIn.fragment.CourseInfoFragment;
 import com.hufeiya.SignIn.helper.ApiLevelHelper;
 import com.hufeiya.SignIn.model.Category;
+import com.hufeiya.SignIn.net.AsyncHttpHelper;
 import com.hufeiya.SignIn.widget.TextSharedElementCallback;
 
 import java.util.List;
@@ -54,6 +57,7 @@ public class QuizActivity extends AppCompatActivity {
     private boolean mSavedStateIsPlaying;
     private View mToolbarBack;
     private static Category category;
+    private CourseInfoFragment courseInfoFragment;
 
 
     final View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -81,6 +85,11 @@ public class QuizActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         populate();
+        setEnterSharedElementCallback();
+        inflateFragment();
+
+    }
+    private void setEnterSharedElementCallback(){
         int categoryNameTextSize = getResources()
                 .getDimensionPixelSize(R.dimen.category_item_text_size);
         int paddingStart = getResources().getDimensionPixelSize(R.dimen.spacing_double);
@@ -113,6 +122,21 @@ public class QuizActivity extends AppCompatActivity {
                                 .alpha(1f);
                     }
                 });
+    }
+    private void inflateFragment(){
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        if(AsyncHttpHelper.user.getUserType()){//student
+            if(category.getId().equals("addcourse")){
+
+            }else {
+                courseInfoFragment = CourseInfoFragment.newInstance(category.getName());
+                transaction.replace(R.id.content,courseInfoFragment);
+            }
+
+        }else{//teacher
+
+        }
+        transaction.commit();
     }
 
     @Override
@@ -201,7 +225,12 @@ public class QuizActivity extends AppCompatActivity {
         mToolbarBack = findViewById(R.id.back);
         mToolbarBack.setOnClickListener(mOnClickListener);
         TextView titleView = (TextView) findViewById(R.id.category_title);
-        titleView.setText(category.getName());
+        if (category.getName().equals("添加课程")){
+            titleView.setText(category.getName());
+        }else{
+            titleView.setText(AsyncHttpHelper.user.getJsonCoursesMap().get(Integer.parseInt(category.getName())).getCourseName());
+        }
+
         titleView.setTextColor(ContextCompat.getColor(this,
                 category.getTheme().getTextPrimaryColor()));
         if (mSavedStateIsPlaying) {
@@ -209,6 +238,7 @@ public class QuizActivity extends AppCompatActivity {
             setToolbarElevation(false);
         }
     }
+
 
     @Override
     protected void onStop() {

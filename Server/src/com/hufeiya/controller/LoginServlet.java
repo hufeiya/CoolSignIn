@@ -2,8 +2,10 @@ package com.hufeiya.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -23,6 +25,7 @@ import com.hufeiya.jsonObject.JsonCourse;
 import com.hufeiya.jsonObject.JsonSignInfo;
 import com.hufeiya.jsonObject.JsonUser;
 import com.hufeiya.utils.AESUtils;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 
 public class LoginServlet extends HttpServlet {
@@ -77,20 +80,22 @@ public class LoginServlet extends HttpServlet {
 			List<Student> students = new StudentDAO().findByExample(example);
 			// This student haven't joined a course
 			if (students == null || students.size() == 0) {
-				jsonUser.setJsonCourses(null);
+				jsonUser.setJsonCoursesMap(null);
 				return jsonUser;
 			}
-			Student student = students.get(0);
-			List<SignInfo> signInfos = new SignInfoDAO().findByProperty(
+			Map<Integer,JsonCourse> jsonCourses = new HashMap<Integer, JsonCourse>();
+			//Student student = students.get(0);
+			for(Student student : students){
+				List<SignInfo> signInfos = new SignInfoDAO().findByProperty(
 					"student", student);
-			Set<JsonCourse> jsonCourses = new HashSet<JsonCourse>();
-			for (SignInfo signInfo : signInfos) {
-				JsonSignInfo jsonSignInfo = new JsonSignInfo(signInfo);
-				JsonCourse jsonCourse = new JsonCourse(signInfo.getCourse(),
-						jsonSignInfo);
-				jsonCourses.add(jsonCourse);
+				for (SignInfo signInfo : signInfos) {
+					JsonSignInfo jsonSignInfo = new JsonSignInfo(signInfo);
+					JsonCourse jsonCourse = new JsonCourse(signInfo.getCourse(),
+							jsonSignInfo);
+					jsonCourses.put(jsonCourse.getCid(), jsonCourse);
+				}
 			}
-			jsonUser.setJsonCourses(jsonCourses);
+			jsonUser.setJsonCoursesMap(jsonCourses);
 			return jsonUser;
 		} else {
 			return jsonUser;

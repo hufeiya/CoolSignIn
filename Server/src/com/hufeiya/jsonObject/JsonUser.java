@@ -1,6 +1,8 @@
 package com.hufeiya.jsonObject;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.hufeiya.entity.Course;
@@ -17,7 +19,7 @@ public class JsonUser {
 	private String userNo;
 	private String phone;
 	private Boolean userType;
-	private Set<JsonCourse> jsonCourses = new HashSet<JsonCourse>();
+	private Map<Integer, JsonCourse>jsonCoursesMap = new HashMap<Integer, JsonCourse>();
 	// Constructors
 
 	/** default constructor */
@@ -44,7 +46,7 @@ public class JsonUser {
 		Set<Course> tempCouses = user.getCourses();
 		for(Course course:tempCouses){
 			JsonCourse tempJsonCourse = new JsonCourse(course);
-			this.jsonCourses.add(tempJsonCourse);
+			this.jsonCoursesMap.put(tempJsonCourse.getCid(), tempJsonCourse);
 		}
 	}
 
@@ -74,12 +76,13 @@ public class JsonUser {
 		this.pass = pass;
 	}
 
-	public Set<JsonCourse> getJsonCourses() {
-		return jsonCourses;
+
+	public Map<Integer, JsonCourse> getJsonCoursesMap() {
+		return jsonCoursesMap;
 	}
 
-	public void setJsonCourses(Set<JsonCourse> jsonCourses) {
-		this.jsonCourses = jsonCourses;
+	public void setJsonCoursesMap(Map<Integer, JsonCourse> jsonCoursesMap) {
+		this.jsonCoursesMap = jsonCoursesMap;
 	}
 
 	public String getUserNo() {

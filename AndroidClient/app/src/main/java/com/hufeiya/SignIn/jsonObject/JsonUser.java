@@ -1,7 +1,7 @@
 package com.hufeiya.SignIn.jsonObject;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class JsonUser {
@@ -14,7 +14,7 @@ public class JsonUser {
 	private String userNo;
 	private String phone;
 	private Boolean userType;
-	private Set<JsonCourse> jsonCourses = new HashSet<JsonCourse>();
+	private Map<Integer, JsonCourse> jsonCoursesMap = new HashMap<Integer, JsonCourse>();
 	// Constructors
 
 	/** default constructor */
@@ -59,13 +59,9 @@ public class JsonUser {
 		this.pass = pass;
 	}
 
-	public Set<JsonCourse> getJsonCourses() {
-		return jsonCourses;
-	}
+	public Map<Integer, JsonCourse> getJsonCoursesMap() {return jsonCoursesMap;}
 
-	public void setJsonCourses(Set<JsonCourse> jsonCourses) {
-		this.jsonCourses = jsonCourses;
-	}
+	public void setJsonCoursesMap(Map<Integer, JsonCourse> jsonCoursesMap) {this.jsonCoursesMap = jsonCoursesMap;}
 
 	public String getUserNo() {
 		return this.userNo;
