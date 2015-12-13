@@ -25,6 +25,7 @@ import com.hufeiya.jsonObject.JsonCourse;
 import com.hufeiya.jsonObject.JsonSignInfo;
 import com.hufeiya.jsonObject.JsonUser;
 import com.hufeiya.utils.AESUtils;
+import com.hufeiya.utils.CookieUtils;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 
@@ -41,7 +42,7 @@ public class LoginServlet extends HttpServlet {
 		PrintWriter out = res.getWriter();
 		UserDAO userDAO = new UserDAO();
 		User user = null;
-		int uidFromCookies = getUidFromCookies(req.getCookies());
+		int uidFromCookies = CookieUtils.getUidFromCookies(req.getCookies());
 		if (uidFromCookies != INVALID_VALUE) {
 			user = userDAO.findById(uidFromCookies);
 			System.out.println("用户id:" + user.getUid());
@@ -62,7 +63,7 @@ public class LoginServlet extends HttpServlet {
 				return;
 			}
 			user = (User) resultUserList.get(0);
-			addCookieToRespose(res, user.getUid());
+			CookieUtils.addCookieToRespose(res, user.getUid());
 		}
 		JsonUser jsonUser = userToJsonUser(user);
 		final Gson gson = new Gson();
@@ -102,25 +103,4 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
-	private void addCookieToRespose(HttpServletResponse response, int id) {
-		Cookie cookie = new Cookie("uid", AESUtils.encrypt(id));
-		System.out.println(cookie.getValue());//debug the cookie 
-		response.addCookie(cookie);
-	}
-
-	private int getUidFromCookies(Cookie[] cookies) {
-		int decryptedCookieValue = INVALID_VALUE;
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("uid")) {
-					int tempDecrypted = AESUtils.decrypt(cookie.getValue());
-					if (tempDecrypted != INVALID_VALUE) {
-						decryptedCookieValue = tempDecrypted;
-						break;
-					}
-				}
-			}
-		}
-		return decryptedCookieValue;
-	}
 }

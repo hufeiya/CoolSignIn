@@ -16,10 +16,16 @@
 
 package com.hufeiya.SignIn.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,9 +40,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Interpolator;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hufeiya.SignIn.R;
+import com.hufeiya.SignIn.application.MyApplication;
+import com.hufeiya.SignIn.fragment.CameraPreviewfFragment;
 import com.hufeiya.SignIn.fragment.CourseInfoFragment;
 import com.hufeiya.SignIn.helper.ApiLevelHelper;
 import com.hufeiya.SignIn.model.Category;
@@ -46,11 +56,12 @@ import com.hufeiya.SignIn.widget.TextSharedElementCallback;
 import java.util.List;
 
 
-public class QuizActivity extends AppCompatActivity {
+public class QuizActivity extends AppCompatActivity implements LocationListener {
 
     private static final String TAG = "QuizActivity";
     private static final String IMAGE_CATEGORY = "image_category_";
     private static final String STATE_IS_PLAYING = "isPlaying";
+    private Location location;
 
     private Interpolator mInterpolator;
     private FloatingActionButton mQuizFab;
@@ -58,6 +69,10 @@ public class QuizActivity extends AppCompatActivity {
     private View mToolbarBack;
     private static Category category;
     private CourseInfoFragment courseInfoFragment;
+    private CameraPreviewfFragment cameraPreviewfFragment;
+    private LocationManager locationManager;
+    private ProgressBar progressBar;
+    private Fragment mContent;
 
 
     final View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -66,6 +81,9 @@ public class QuizActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.back:
                     onBackPressed();
+                    break;
+                case R.id.fab_quiz:
+                    fabButtonPress();
                     break;
             }
         }
@@ -87,9 +105,11 @@ public class QuizActivity extends AppCompatActivity {
         populate();
         setEnterSharedElementCallback();
         inflateFragment();
+        getLocation();
 
     }
-    private void setEnterSharedElementCallback(){
+
+    private void setEnterSharedElementCallback() {
         int categoryNameTextSize = getResources()
                 .getDimensionPixelSize(R.dimen.category_item_text_size);
         int paddingStart = getResources().getDimensionPixelSize(R.dimen.spacing_double);
@@ -123,17 +143,19 @@ public class QuizActivity extends AppCompatActivity {
                     }
                 });
     }
-    private void inflateFragment(){
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        if(AsyncHttpHelper.user.getUserType()){//student
-            if(category.getId().equals("addcourse")){
 
-            }else {
+
+    private void inflateFragment() {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        if (AsyncHttpHelper.user.getUserType()) {//student
+            if (category.getId().equals("addcourse")) {
+
+            } else {
                 courseInfoFragment = CourseInfoFragment.newInstance(category.getName());
-                transaction.replace(R.id.content,courseInfoFragment);
+                transaction.replace(R.id.content, courseInfoFragment);
             }
 
-        }else{//teacher
+        } else {//teacher
 
         }
         transaction.commit();
@@ -152,7 +174,7 @@ public class QuizActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if ( mQuizFab == null) {
+        if (mQuizFab == null) {
             // Skip the animation if icon or fab are not initialized.
             super.onBackPressed();
             return;
@@ -164,7 +186,6 @@ public class QuizActivity extends AppCompatActivity {
                 .alpha(0f)
                 .setDuration(100)
                 .start();
-
 
 
         ViewCompat.animate(mQuizFab)
@@ -211,6 +232,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private void initLayout(String categoryId) {
         setContentView(R.layout.activity_quiz);
+        progressBar = (ProgressBar)findViewById(R.id.progress);
         mQuizFab = (FloatingActionButton) findViewById(R.id.fab_quiz);
         mQuizFab.setImageResource(R.drawable.ic_play);
         if (mSavedStateIsPlaying) {
@@ -225,9 +247,9 @@ public class QuizActivity extends AppCompatActivity {
         mToolbarBack = findViewById(R.id.back);
         mToolbarBack.setOnClickListener(mOnClickListener);
         TextView titleView = (TextView) findViewById(R.id.category_title);
-        if (category.getName().equals("添加课程")){
+        if (category.getName().equals("添加课程")) {
             titleView.setText(category.getName());
-        }else{
+        } else {
             titleView.setText(AsyncHttpHelper.user.getJsonCoursesMap().get(Integer.parseInt(category.getName())).getCourseName());
         }
 
@@ -236,6 +258,105 @@ public class QuizActivity extends AppCompatActivity {
         if (mSavedStateIsPlaying) {
             // the toolbar should not have more elevation than the content while playing
             setToolbarElevation(false);
+        }
+    }
+
+    private void fabButtonPress() {
+        if (AsyncHttpHelper.user.getUserType()) {//student user
+            if (!category.getId().equals("addcourse")) {
+                if (isRightTimeToSign()) {
+                    if (this.location == null) {
+                        Toast.makeText(this, "还没获取到位置,抱歉蛤", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d("quiz", "start send location");
+                        progressBar.setVisibility(View.VISIBLE);
+                        AsyncHttpHelper.uploadLocation(this, category.getName(), location.getLatitude(), location.getLongitude());
+                    }
+                } else {
+                    Toast.makeText(QuizActivity.this, "还没到签到时间哦", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+
+            }
+        } else {//teacher user
+            if (category.getId().equals("addcourse")) {
+
+            } else {
+
+            }
+        }
+    }
+
+    private boolean isRightTimeToSign() {
+        //TODO
+        return true;
+    }
+
+
+    private void getLocation() {
+        locationManager = (LocationManager) MyApplication.getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(MyApplication.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MyApplication.getContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(QuizActivity.this, "您手机上的流氓xx卫士不给我位置权限 ( > c < ) ", Toast.LENGTH_SHORT).show();
+            String locationPermissions[] = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentapiVersion >= 23) {
+                requestPermissions(locationPermissions, 1);
+            }
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            for (int i = 0; i < grantResults.length; i++) {
+                if (i == PackageManager.PERMISSION_DENIED)
+                    return;
+            }
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        this.location = location;
+    }
+
+    //When your location is in the right scale.Called by AsyncHttpHelper.
+    public void startSign(){
+        Toast.makeText(this,"success!",Toast.LENGTH_SHORT).show();
+        progressBar.setVisibility(View.INVISIBLE);
+        startCameraPreview();
+    }
+
+    public void toastNetUnavalible(){
+        Toast.makeText(this,"蛤(-__-),网络连接失败.",Toast.LENGTH_SHORT).show();
+    }
+
+    public void startCameraPreview(){
+        switchContent(courseInfoFragment,CameraPreviewfFragment.newInstance());
+    }
+    public void switchContent(Fragment from, Fragment to) {
+        if (mContent != to) {
+            mContent = to;
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            //.setCustomAnimations(android.R.anim.fade_in, android.R.anim.slide_out_right);
+            if (!to.isAdded()) {    // 先判断是否被add过
+                transaction.hide(from).add(R.id.content, to).commit(); // 隐藏当前的fragment，add下一个到Activity中
+            } else {
+                transaction.hide(from).show(to).commit(); // 隐藏当前的fragment，显示下一个
+            }
         }
     }
 
@@ -250,5 +371,20 @@ public class QuizActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d("quiz","onDestory() executed!!");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }

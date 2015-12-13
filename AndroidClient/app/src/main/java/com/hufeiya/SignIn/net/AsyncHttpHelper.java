@@ -1,15 +1,18 @@
 package com.hufeiya.SignIn.net;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
 import com.hufeiya.SignIn.activity.CategorySelectionActivity;
+import com.hufeiya.SignIn.activity.QuizActivity;
 import com.hufeiya.SignIn.application.MyApplication;
 import com.hufeiya.SignIn.fragment.CategorySelectionFragment;
 import com.hufeiya.SignIn.fragment.SignInFragment;
 import com.hufeiya.SignIn.jsonObject.JsonUser;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 
@@ -32,16 +35,17 @@ public class AsyncHttpHelper {
     public static JsonUser user;
     private static String serverURL = "http://192.168.2.8:8089/Server/";
     private static PersistentCookieStore myCookieStore = new PersistentCookieStore(MyApplication.getContext());
+
     static {
         client.setCookieStore(myCookieStore);
     }
 
 
-    public static void login(String phone,String pass, final SignInFragment fragment){
+    public static void login(String phone, String pass, final SignInFragment fragment) {
         boolean isSucceed;
         final String md5pass = md5(pass);
-        Log.d("login",md5pass);
-        client.get(serverURL+"login?phone="+phone+"&pass="+md5pass,null,new JsonHttpResponseHandler(){
+        Log.d("login", md5pass);
+        client.get(serverURL + "login?phone=" + phone + "&pass=" + md5pass, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
@@ -53,11 +57,11 @@ public class AsyncHttpHelper {
                 try {
                     fragment.progressBar.setVisibility(View.GONE);
                     String isSucceed = response.getString(0);
-                    if (isSucceed.equals("false")){
+                    if (isSucceed.equals("false")) {
                         fragment.toastLoginFail("account");
 
-                    }else{
-                        user = new Gson().fromJson(response.get(1).toString(),JsonUser.class);
+                    } else {
+                        user = new Gson().fromJson(response.get(1).toString(), JsonUser.class);
                         fragment.savePlayer(md5pass);
                         fragment.enterTheCategorySelectionActivity();
                     }
@@ -78,9 +82,9 @@ public class AsyncHttpHelper {
 
     }
 
-    public static void refrash(String phone,String pass, final CategorySelectionFragment fragment){
-        String httpParameters = "login?phone="+phone+"&pass="+pass;
-        client.get(serverURL+httpParameters,null,new JsonHttpResponseHandler(){
+    public static void refrash(String phone, String pass, final CategorySelectionFragment fragment) {
+        String httpParameters = "login?phone=" + phone + "&pass=" + pass;
+        client.get(serverURL + httpParameters, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
@@ -91,15 +95,15 @@ public class AsyncHttpHelper {
                 super.onSuccess(statusCode, headers, response);
                 try {
                     String isSucceed = response.getString(0);
-                    if (isSucceed.equals("false")){
+                    if (isSucceed.equals("false")) {
                         //TODO relogin
-                    }else{
-                        user = new Gson().fromJson(response.get(1).toString(),JsonUser.class);
+                    } else {
+                        user = new Gson().fromJson(response.get(1).toString(), JsonUser.class);
                         fragment.swipeRefreshLayout.setRefreshing(false);
                         fragment.getmAdapter().updateCategories(fragment.getActivity());
                         fragment.getmAdapter().notifyDataSetChanged();
-                        ((CategorySelectionActivity)fragment.getActivity()).setUpToolbar
-                                (((CategorySelectionActivity)fragment.getActivity()).getUser());
+                        ((CategorySelectionActivity) fragment.getActivity()).setUpToolbar
+                                (((CategorySelectionActivity) fragment.getActivity()).getUser());
                         fragment.setDrawer();
 
                     }
@@ -118,6 +122,24 @@ public class AsyncHttpHelper {
             }
         });
 
+    }
+
+    public static void uploadLocation(final Context context,String cid, double latitude,double longitude){
+        String httpParameters="location?cid=" + cid + "&latitude=" + latitude +"&longitude=" + longitude;
+        client.get(serverURL + httpParameters, null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String response = new String(responseBody);
+                if (response.equals("true")){
+                    ((QuizActivity)context).startSign();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                ((QuizActivity)context).toastNetUnavalible();
+            }
+        });
     }
 
 

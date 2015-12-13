@@ -12,6 +12,10 @@ import com.hufeiya.SignIn.R;
 import com.hufeiya.SignIn.jsonObject.JsonCourse;
 import com.hufeiya.SignIn.net.AsyncHttpHelper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -41,7 +45,6 @@ public class CourseInfoFragment extends Fragment {
      * @param cid is Course Id .
      * @return A new instance of fragment CourseInfoFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static CourseInfoFragment newInstance(String cid) {
         CourseInfoFragment fragment = new CourseInfoFragment();
         Bundle args = new Bundle();
@@ -79,7 +82,15 @@ public class CourseInfoFragment extends Fragment {
         JsonCourse jsonCourse = AsyncHttpHelper.user.getJsonCoursesMap().get(Integer.parseInt(cid));
         courseId.setText(cid);
         techerName.setText(jsonCourse.getTeacherName());
-        signTime.setText(jsonCourse.getStartDates());
+        String [] startDates = jsonCourse.getStartDates().split(",");
+        String tobeDisplay = "";
+        for(String startDate : startDates){
+            long timestamp = Long.parseLong(startDate) * 1000;
+            tobeDisplay += (getDate(timestamp) + "\n");
+        }
+        tobeDisplay = tobeDisplay.substring(0,tobeDisplay.length()-1);
+        signTime.setText(tobeDisplay);
+        //signTime.setText(jsonCourse.getStartDates());
         //timesOfWeeks.setText(jsonCourse.getNumberOfWeeks());
     }
 
@@ -112,4 +123,15 @@ public class CourseInfoFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    private String getDate(long timeStamp){
+
+        try{
+            DateFormat sdf = new SimpleDateFormat("E,HH:mm");
+            Date netDate = (new Date(timeStamp));
+            return sdf.format(netDate);
+        }
+        catch(Exception ex){
+            return "xx";
+        }
+    }
 }
