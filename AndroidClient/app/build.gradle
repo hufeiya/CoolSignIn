@@ -34,5 +34,6 @@ dependencies {
     }
     compile files('libs/faceppofflinesdk.jar')
     compile files('libs/faceppsdk.jar')
+    compile 'com.qiniu:qiniu-android-sdk:7.0.+'
 
 }

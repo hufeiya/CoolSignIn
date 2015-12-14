@@ -31,7 +31,6 @@ import org.apache.tomcat.util.codec.binary.Base64;
 
 public class LoginServlet extends HttpServlet {
 	private static final Boolean IS_STUDENT = true;
-	private static final int INVALID_VALUE = -1;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -43,7 +42,7 @@ public class LoginServlet extends HttpServlet {
 		UserDAO userDAO = new UserDAO();
 		User user = null;
 		int uidFromCookies = CookieUtils.getUidFromCookies(req.getCookies());
-		if (uidFromCookies != INVALID_VALUE) {
+		if (uidFromCookies != CookieUtils.INVALID_VALUE) {
 			user = userDAO.findById(uidFromCookies);
 			System.out.println("用户id:" + user.getUid());
 		} else {

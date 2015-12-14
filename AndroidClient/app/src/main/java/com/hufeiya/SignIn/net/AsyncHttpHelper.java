@@ -15,6 +15,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UploadManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +38,7 @@ public class AsyncHttpHelper {
     public static JsonUser user;
     private static String serverURL = "http://192.168.2.8:8089/Server/";
     private static PersistentCookieStore myCookieStore = new PersistentCookieStore(MyApplication.getContext());
-
+    private static UploadManager uploadManager = new UploadManager();//Qi Niu
     static {
         client.setCookieStore(myCookieStore);
     }
@@ -138,6 +141,32 @@ public class AsyncHttpHelper {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 ((QuizActivity)context).toastNetUnavalible();
+            }
+        });
+    }
+
+    //get uptoken from server to have the access to Qi Niu,then Upload photo.
+    public static void getUptokenAndUploadPhoto(final Context context, final byte[] photoBytes,final String signId){
+        String httpParameters="uptoken?signid=" + signId;
+        client.get(serverURL + httpParameters, null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String token = new String(responseBody);
+                if (token.equals("false")){
+                    ((QuizActivity)context).uploadPhotoFail();
+                }else{//succeed
+                    uploadManager.put(photoBytes, signId, token, new UpCompletionHandler() {
+                        @Override
+                        public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
+                            ((QuizActivity)context).uploadPhotoSuccess();
+                        }
+                    },null);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                ((QuizActivity)context).uploadPhotoFail();
             }
         });
     }

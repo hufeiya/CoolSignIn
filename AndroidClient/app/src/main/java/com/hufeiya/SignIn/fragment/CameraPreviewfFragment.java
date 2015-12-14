@@ -26,7 +26,7 @@ import java.io.IOException;
  */
 
 
-public class CameraPreviewfFragment extends Fragment implements SurfaceHolder.Callback, Camera.PreviewCallback {
+public class CameraPreviewfFragment extends Fragment implements SurfaceHolder.Callback, Camera.PreviewCallback, Camera.PictureCallback{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -42,9 +42,15 @@ public class CameraPreviewfFragment extends Fragment implements SurfaceHolder.Ca
     private FaceDetecter facedetecter = null;
     private OnRecognizedFaceListener onRecognizedFaceListener;
 
+    @Override
+    public void onPictureTaken(byte[] data, Camera camera) {
+        onRecognizedFaceListener.onPhotoTaken(data);
+    }
+
     public interface OnRecognizedFaceListener{
         public void onRecognizedFace();
         public void onNotRedcognizedFace();
+        public void onPhotoTaken(byte[] data);
     }
 
     // TODO: Rename and change types of parameters
@@ -157,6 +163,11 @@ public class CameraPreviewfFragment extends Fragment implements SurfaceHolder.Ca
                 CameraPreviewfFragment.this.camera.setPreviewCallback(CameraPreviewfFragment.this);
             }
         });
+    }
+    public void shooting(){
+        if(camera != null){
+            camera.takePicture(null,null,this);
+        }
     }
 
     @Override

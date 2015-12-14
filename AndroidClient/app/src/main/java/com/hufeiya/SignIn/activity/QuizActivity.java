@@ -49,11 +49,14 @@ import com.hufeiya.SignIn.application.MyApplication;
 import com.hufeiya.SignIn.fragment.CameraPreviewfFragment;
 import com.hufeiya.SignIn.fragment.CourseInfoFragment;
 import com.hufeiya.SignIn.helper.ApiLevelHelper;
+import com.hufeiya.SignIn.jsonObject.JsonSignInfo;
 import com.hufeiya.SignIn.model.Category;
 import com.hufeiya.SignIn.net.AsyncHttpHelper;
 import com.hufeiya.SignIn.widget.TextSharedElementCallback;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class QuizActivity extends AppCompatActivity implements LocationListener,CameraPreviewfFragment.OnRecognizedFaceListener {
@@ -273,7 +276,10 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
         if (AsyncHttpHelper.user.getUserType()) {//student user
             if (!category.getId().equals("addcourse")) {
                 if(isShootingAccomplished){
-
+                    isShootingAccomplished = false;
+                    progressBar.setVisibility(View.VISIBLE);
+                    cameraPreviewfFragment.shooting();
+                    Toast.makeText(this,"正在上传哦",Toast.LENGTH_LONG).show();
                 }
                 else if (isRightTimeToSign()) {
                     if (this.location == null) {
@@ -422,6 +428,30 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
     public void onNotRedcognizedFace() {
         isShootingAccomplished = false;
         mQuizFab.hide();
+    }
+
+    //When the Photo is taken by CameraPreviewFragment,this method called.
+    @Override
+    public void onPhotoTaken(byte[] data) {
+        Map signInfos = AsyncHttpHelper.user.getJsonCoursesMap().get(Integer.parseInt(category.getName())).getSignInfos();
+        int sid = -1;
+        Iterator iterator = signInfos.entrySet().iterator();
+        while(iterator.hasNext()){
+            sid = (Integer)((Map.Entry) iterator.next()).getKey();
+        }
+        AsyncHttpHelper.getUptokenAndUploadPhoto(this, data, Integer.toString(sid));
+    }
+
+    public void uploadPhotoSuccess(){
+        //TODO
+        progressBar.setVisibility(View.INVISIBLE);
+        Toast.makeText(this,"上传照片成功咯.",Toast.LENGTH_LONG).show();
+    }
+
+    public void uploadPhotoFail(){
+        //TODO
+        progressBar.setVisibility(View.INVISIBLE);
+        Toast.makeText(this,"上传照片失败啦抱歉,再试试吧",Toast.LENGTH_LONG).show();
     }
 
     @Override

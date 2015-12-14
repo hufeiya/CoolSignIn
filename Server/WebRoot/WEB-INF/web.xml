@@ -16,6 +16,14 @@
 		<servlet-name>location</servlet-name>
 		<servlet-class>com.hufeiya.controller.LocationServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>uptoken</servlet-name>
+		<servlet-class>com.hufeiya.controller.UptokenServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>uptoken</servlet-name>
+		<url-pattern>/uptoken</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>location</servlet-name>
 		<url-pattern>/location</url-pattern>

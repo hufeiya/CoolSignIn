@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class CookieUtils {
 	private static final Boolean IS_STUDENT = true;
-	private static final int INVALID_VALUE = -1;
+	public static final int INVALID_VALUE = -1;
 	public static void addCookieToRespose(HttpServletResponse response, int id) {
 		Cookie cookie = new Cookie("uid", AESUtils.encrypt(id));
 		System.out.println(cookie.getValue());//debug the cookie 
