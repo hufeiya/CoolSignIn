@@ -1,5 +1,6 @@
 package com.hufeiya.SignIn.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.RelativeLayout;
 
 import com.faceplusplus.api.FaceDetecter;
 import com.hufeiya.SignIn.R;
+import com.hufeiya.SignIn.activity.QuizActivity;
 import com.hufeiya.SignIn.helper.FaceMask;
 
 import java.io.IOException;
@@ -29,15 +31,21 @@ public class CameraPreviewfFragment extends Fragment implements SurfaceHolder.Ca
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    SurfaceView camerasurface = null;
-    FaceMask mask = null;
-    Camera camera = null;
-    HandlerThread handleThread = null;
-    Handler detectHandler = null;
-    Runnable detectRunnalbe = null;
+    private SurfaceView camerasurface = null;
+    private FaceMask mask = null;
+    private Camera camera = null;
+    private HandlerThread handleThread = null;
+    private Handler detectHandler = null;
+    private Runnable detectRunnalbe = null;
     private int width = 320;
     private int height = 240;
-    FaceDetecter facedetecter = null;
+    private FaceDetecter facedetecter = null;
+    private OnRecognizedFaceListener onRecognizedFaceListener;
+
+    public interface OnRecognizedFaceListener{
+        public void onRecognizedFace();
+        public void onNotRedcognizedFace();
+    }
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -133,6 +141,12 @@ public class CameraPreviewfFragment extends Fragment implements SurfaceHolder.Ca
                 }
                 final FaceDetecter.Face[] faceinfo = facedetecter.findFaces( ori, height,
                         width);
+                //send face found or not found msg to activity.
+                if (faceinfo != null && faceinfo.length != 0){
+                    onRecognizedFaceListener.onRecognizedFace();
+                }else{
+                    onRecognizedFaceListener.onNotRedcognizedFace();
+                }
                 getActivity().runOnUiThread(new Runnable() {
 
                     @Override
@@ -143,6 +157,12 @@ public class CameraPreviewfFragment extends Fragment implements SurfaceHolder.Ca
                 CameraPreviewfFragment.this.camera.setPreviewCallback(CameraPreviewfFragment.this);
             }
         });
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        onRecognizedFaceListener = (QuizActivity)activity;
     }
 
     @Override

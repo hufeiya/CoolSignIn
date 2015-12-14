@@ -56,11 +56,13 @@ import com.hufeiya.SignIn.widget.TextSharedElementCallback;
 import java.util.List;
 
 
-public class QuizActivity extends AppCompatActivity implements LocationListener {
+public class QuizActivity extends AppCompatActivity implements LocationListener,CameraPreviewfFragment.OnRecognizedFaceListener {
 
     private static final String TAG = "QuizActivity";
     private static final String IMAGE_CATEGORY = "image_category_";
     private static final String STATE_IS_PLAYING = "isPlaying";
+    private static final int REQUEST_CODE_FOR_POSITON  = 88;
+    private static final int REQUEST_CAMARA_PERMISSION = 89;
     private Location location;
 
     private Interpolator mInterpolator;
@@ -73,6 +75,8 @@ public class QuizActivity extends AppCompatActivity implements LocationListener 
     private LocationManager locationManager;
     private ProgressBar progressBar;
     private Fragment mContent;
+    private boolean isUploading = false;
+    private boolean isShootingAccomplished = false;
 
 
     final View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -178,6 +182,10 @@ public class QuizActivity extends AppCompatActivity implements LocationListener 
             // Skip the animation if icon or fab are not initialized.
             super.onBackPressed();
             return;
+        }else if(mContent != null && mContent == cameraPreviewfFragment){
+            switchContent(cameraPreviewfFragment,courseInfoFragment);
+            mContent = courseInfoFragment;
+            return;
         }
 
         ViewCompat.animate(mToolbarBack)
@@ -264,13 +272,22 @@ public class QuizActivity extends AppCompatActivity implements LocationListener 
     private void fabButtonPress() {
         if (AsyncHttpHelper.user.getUserType()) {//student user
             if (!category.getId().equals("addcourse")) {
-                if (isRightTimeToSign()) {
+                if(isShootingAccomplished){
+
+                }
+                else if (isRightTimeToSign()) {
                     if (this.location == null) {
                         Toast.makeText(this, "还没获取到位置,抱歉蛤", Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d("quiz", "start send location");
-                        progressBar.setVisibility(View.VISIBLE);
-                        AsyncHttpHelper.uploadLocation(this, category.getName(), location.getLatitude(), location.getLongitude());
+                        if(isUploading){
+                            Toast.makeText(this,"正在检查位置哦",Toast.LENGTH_SHORT).show();
+                        }else{
+                            isUploading = true;
+                            progressBar.setVisibility(View.VISIBLE);
+                            AsyncHttpHelper.uploadLocation(this, category.getName(), location.getLatitude(), location.getLongitude());
+                        }
+
                     }
                 } else {
                     Toast.makeText(QuizActivity.this, "还没到签到时间哦", Toast.LENGTH_SHORT).show();
@@ -302,30 +319,52 @@ public class QuizActivity extends AppCompatActivity implements LocationListener 
             String locationPermissions[] = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
             int currentapiVersion = android.os.Build.VERSION.SDK_INT;
             if (currentapiVersion >= 23) {
-                requestPermissions(locationPermissions, 1);
+                requestPermissions(locationPermissions, REQUEST_CODE_FOR_POSITON);
             }
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
     }
+    private boolean getCameraPremission(){
+        if (ActivityCompat.checkSelfPermission(MyApplication.getContext(), Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(QuizActivity.this, "您手机上的流氓xx卫士不给我拍照权限 ( > c < ) ", Toast.LENGTH_SHORT).show();
+            String locationPermissions[] = {Manifest.permission.CAMERA};
+            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentapiVersion >= 23) {
+                requestPermissions(locationPermissions, REQUEST_CAMARA_PERMISSION);
+            }
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            for (int i = 0; i < grantResults.length; i++) {
-                if (i == PackageManager.PERMISSION_DENIED)
-                    return;
-            }
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+        switch (requestCode){
+            case REQUEST_CODE_FOR_POSITON:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+
+                } else {
+                    // TODO permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                break;
+            case REQUEST_CAMARA_PERMISSION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    setStateBeforeCameraPreview();
+                    startCameraPreview();
+                }
         }
+
     }
 
     @Override
@@ -335,9 +374,19 @@ public class QuizActivity extends AppCompatActivity implements LocationListener 
 
     //When your location is in the right scale.Called by AsyncHttpHelper.
     public void startSign(){
-        Toast.makeText(this,"success!",Toast.LENGTH_SHORT).show();
+        if(getCameraPremission())
+        {
+            setStateBeforeCameraPreview();
+            startCameraPreview();
+        }else{
+            //I have no idea.I WANT the CAMERA!
+        }
+
+    }
+    private void setStateBeforeCameraPreview(){
+        mQuizFab.hide();
+        isUploading = false;
         progressBar.setVisibility(View.INVISIBLE);
-        startCameraPreview();
     }
 
     public void toastNetUnavalible(){
@@ -345,7 +394,10 @@ public class QuizActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void startCameraPreview(){
-        switchContent(courseInfoFragment,CameraPreviewfFragment.newInstance());
+        if(cameraPreviewfFragment == null){
+            cameraPreviewfFragment = CameraPreviewfFragment.newInstance();
+        }
+        switchContent(courseInfoFragment, cameraPreviewfFragment);
     }
     public void switchContent(Fragment from, Fragment to) {
         if (mContent != to) {
@@ -360,6 +412,17 @@ public class QuizActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
+    @Override
+    public void onRecognizedFace() {
+        isShootingAccomplished = true;
+        mQuizFab.show();
+    }
+
+    @Override
+    public void onNotRedcognizedFace() {
+        isShootingAccomplished = false;
+        mQuizFab.hide();
+    }
 
     @Override
     protected void onStop() {
@@ -387,4 +450,6 @@ public class QuizActivity extends AppCompatActivity implements LocationListener 
     public void onProviderDisabled(String provider) {
 
     }
+
+
 }
