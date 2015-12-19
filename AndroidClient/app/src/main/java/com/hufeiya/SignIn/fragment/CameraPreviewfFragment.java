@@ -181,7 +181,12 @@ public class CameraPreviewfFragment extends Fragment implements SurfaceHolder.Ca
         super.onResume();
         camera = Camera.open(1);
         Camera.Parameters para = camera.getParameters();
+        para.setExposureCompensation(para.getMaxExposureCompensation());
+        if(para.isAutoExposureLockSupported()) {
+            para.setAutoExposureLock(false);
+        }
         para.setPreviewSize(width, height);
+        para.setPictureSize(width,height);
         camera.setParameters(para);
     }
 

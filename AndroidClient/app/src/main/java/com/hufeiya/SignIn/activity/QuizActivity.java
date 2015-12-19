@@ -321,7 +321,7 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
         if (ActivityCompat.checkSelfPermission(MyApplication.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MyApplication.getContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(QuizActivity.this, "您手机上的流氓xx卫士不给我位置权限 ( > c < ) ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(QuizActivity.this, "我没有位置权限 ( > c < ) ", Toast.LENGTH_SHORT).show();
             String locationPermissions[] = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
             int currentapiVersion = android.os.Build.VERSION.SDK_INT;
             if (currentapiVersion >= 23) {
@@ -335,7 +335,7 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
     private boolean getCameraPremission(){
         if (ActivityCompat.checkSelfPermission(MyApplication.getContext(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(QuizActivity.this, "您手机上的流氓xx卫士不给我拍照权限 ( > c < ) ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(QuizActivity.this, "我没有拍照权限 ( > c < ) ", Toast.LENGTH_SHORT).show();
             String locationPermissions[] = {Manifest.permission.CAMERA};
             int currentapiVersion = android.os.Build.VERSION.SDK_INT;
             if (currentapiVersion >= 23) {
