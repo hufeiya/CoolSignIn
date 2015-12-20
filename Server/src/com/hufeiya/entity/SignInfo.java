@@ -36,6 +36,13 @@ public class SignInfo implements java.io.Serializable {
 		this.signTimes = signTimes;
 		this.lastSignPhoto = lastSignPhoto;
 	}
+	/** constructor for update*/
+	public SignInfo( String signDetail,
+			Integer signTimes, String lastSignPhoto) {
+		this.signDetail = signDetail;
+		this.signTimes = signTimes;
+		this.lastSignPhoto = lastSignPhoto;
+	}
 
 	// Property accessors
 

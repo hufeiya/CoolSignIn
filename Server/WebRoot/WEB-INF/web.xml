@@ -20,6 +20,14 @@
 		<servlet-name>uptoken</servlet-name>
 		<servlet-class>com.hufeiya.controller.UptokenServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>signin</servlet-name>
+		<servlet-class>com.hufeiya.controller.SignInServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>signin</servlet-name>
+		<url-pattern>/signin</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>uptoken</servlet-name>
 		<url-pattern>/uptoken</url-pattern>

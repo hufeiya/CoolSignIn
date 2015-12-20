@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,42 @@ public class SignInfoDAO extends BaseHibernateDAO {
 			log.error("save failed", re);
 			throw re;
 		}
+	}
+	public void saveSingle(SignInfo transientInstance) {
+		log.debug("saving SignInfo instance");
+		Session session  = getSession();
+		Transaction tx = session.beginTransaction();
+		try {
+			session.save(transientInstance);
+			tx.commit();
+			log.debug("save successful");
+		} catch (RuntimeException re) {
+			log.error("save failed", re);
+			if(tx != null){
+				tx.rollback();
+			}
+			throw re;
+		}
+	}
+	public boolean updateSingle(int id,String signDetail, int signTimes, String lastSignPhoto){
+		Session session = getSession();
+		session.beginTransaction();
+		String hqlString="update SignInfo  set signDetail=:signDetail , signTimes=:signTimes , lastSignPhoto=:lastSignPhoto where signID=:id";
+		Query query = session.createQuery(hqlString);
+		query.setString("signDetail", signDetail);
+		query.setInteger("signTimes", signTimes);
+		query.setString("lastSignPhoto", lastSignPhoto);
+		query.setInteger("id", id);
+		try {
+			query.executeUpdate();
+			session.getTransaction().commit();
+			return true;
+		} catch (Exception e) {
+			log.debug("update signInfo fail!! ");
+			e.printStackTrace();
+			return false;
+		}
+		
 	}
 
 	public void delete(SignInfo persistentInstance) {

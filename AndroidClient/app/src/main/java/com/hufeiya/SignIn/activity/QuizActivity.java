@@ -59,12 +59,13 @@ import java.util.List;
 import java.util.Map;
 
 
-public class QuizActivity extends AppCompatActivity implements LocationListener,CameraPreviewfFragment.OnRecognizedFaceListener {
+public class QuizActivity extends AppCompatActivity implements LocationListener, CameraPreviewfFragment.OnRecognizedFaceListener {
 
+    private static final String QI_NIU_DOMAIN = "http://7xp62n.com1.z0.glb.clouddn.com/";//the domain to save the photo on Qi Niu
     private static final String TAG = "QuizActivity";
     private static final String IMAGE_CATEGORY = "image_category_";
     private static final String STATE_IS_PLAYING = "isPlaying";
-    private static final int REQUEST_CODE_FOR_POSITON  = 88;
+    private static final int REQUEST_CODE_FOR_POSITON = 88;
     private static final int REQUEST_CAMARA_PERMISSION = 89;
     private Location location;
 
@@ -80,6 +81,7 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
     private Fragment mContent;
     private boolean isUploading = false;
     private boolean isShootingAccomplished = false;
+    private int sid = 0;//signID for student user
 
 
     final View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -185,8 +187,8 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
             // Skip the animation if icon or fab are not initialized.
             super.onBackPressed();
             return;
-        }else if(mContent != null && mContent == cameraPreviewfFragment){
-            switchContent(cameraPreviewfFragment,courseInfoFragment);
+        } else if (mContent != null && mContent == cameraPreviewfFragment) {
+            switchContent(cameraPreviewfFragment, courseInfoFragment);
             mContent = courseInfoFragment;
             return;
         }
@@ -243,7 +245,7 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
 
     private void initLayout(String categoryId) {
         setContentView(R.layout.activity_quiz);
-        progressBar = (ProgressBar)findViewById(R.id.progress);
+        progressBar = (ProgressBar) findViewById(R.id.progress);
         mQuizFab = (FloatingActionButton) findViewById(R.id.fab_quiz);
         mQuizFab.setImageResource(R.drawable.ic_play);
         if (mSavedStateIsPlaying) {
@@ -275,20 +277,19 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
     private void fabButtonPress() {
         if (AsyncHttpHelper.user.getUserType()) {//student user
             if (!category.getId().equals("addcourse")) {
-                if(isShootingAccomplished){
+                if (isShootingAccomplished) {
                     isShootingAccomplished = false;
                     progressBar.setVisibility(View.VISIBLE);
                     cameraPreviewfFragment.shooting();
-                    Toast.makeText(this,"正在上传哦",Toast.LENGTH_LONG).show();
-                }
-                else if (isRightTimeToSign()) {
+                    Toast.makeText(this, "正在上传哦", Toast.LENGTH_LONG).show();
+                } else if (isRightTimeToSign()) {
                     if (this.location == null) {
                         Toast.makeText(this, "还没获取到位置,抱歉蛤", Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d("quiz", "start send location");
-                        if(isUploading){
-                            Toast.makeText(this,"正在检查位置哦",Toast.LENGTH_SHORT).show();
-                        }else{
+                        if (isUploading) {
+                            Toast.makeText(this, "正在检查位置哦", Toast.LENGTH_SHORT).show();
+                        } else {
                             isUploading = true;
                             progressBar.setVisibility(View.VISIBLE);
                             AsyncHttpHelper.uploadLocation(this, category.getName(), location.getLatitude(), location.getLongitude());
@@ -332,7 +333,8 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
     }
-    private boolean getCameraPremission(){
+
+    private boolean getCameraPremission() {
         if (ActivityCompat.checkSelfPermission(MyApplication.getContext(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(QuizActivity.this, "我没有拍照权限 ( > c < ) ", Toast.LENGTH_SHORT).show();
@@ -342,8 +344,7 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
                 requestPermissions(locationPermissions, REQUEST_CAMARA_PERMISSION);
             }
             return false;
-        }
-        else{
+        } else {
             return true;
         }
     }
@@ -351,7 +352,7 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_CODE_FOR_POSITON:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -365,7 +366,7 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
                 break;
             case REQUEST_CAMARA_PERMISSION:
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setStateBeforeCameraPreview();
                     startCameraPreview();
                 }
@@ -379,32 +380,33 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
     }
 
     //When your location is in the right scale.Called by AsyncHttpHelper.
-    public void startSign(){
-        if(getCameraPremission())
-        {
+    public void startSign() {
+        if (getCameraPremission()) {
             setStateBeforeCameraPreview();
             startCameraPreview();
-        }else{
+        } else {
             //I have no idea.I WANT the CAMERA!
         }
 
     }
-    private void setStateBeforeCameraPreview(){
+
+    private void setStateBeforeCameraPreview() {
         mQuizFab.hide();
         isUploading = false;
         progressBar.setVisibility(View.INVISIBLE);
     }
 
-    public void toastNetUnavalible(){
-        Toast.makeText(this,"蛤(-__-),网络连接失败.",Toast.LENGTH_SHORT).show();
+    public void toastNetUnavalible() {
+        Toast.makeText(this, "蛤(-__-),网络连接失败.", Toast.LENGTH_SHORT).show();
     }
 
-    public void startCameraPreview(){
-        if(cameraPreviewfFragment == null){
+    public void startCameraPreview() {
+        if (cameraPreviewfFragment == null) {
             cameraPreviewfFragment = CameraPreviewfFragment.newInstance();
         }
         switchContent(courseInfoFragment, cameraPreviewfFragment);
     }
+
     public void switchContent(Fragment from, Fragment to) {
         if (mContent != to) {
             mContent = to;
@@ -434,24 +436,44 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onPhotoTaken(byte[] data) {
         Map signInfos = AsyncHttpHelper.user.getJsonCoursesMap().get(Integer.parseInt(category.getName())).getSignInfos();
-        int sid = -1;
         Iterator iterator = signInfos.entrySet().iterator();
-        while(iterator.hasNext()){
-            sid = (Integer)((Map.Entry) iterator.next()).getKey();
+        while (iterator.hasNext()) {
+            sid = (Integer) ((Map.Entry) iterator.next()).getKey();
         }
         AsyncHttpHelper.getUptokenAndUploadPhoto(this, data, Integer.toString(sid));
     }
 
-    public void uploadPhotoSuccess(){
+    public void uploadPhotoSuccess() {
         //TODO
         progressBar.setVisibility(View.INVISIBLE);
-        Toast.makeText(this,"上传照片成功咯.",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "上传照片成功咯.开始上传签到信息", Toast.LENGTH_LONG).show();
+        generateSignInfoAndUpload();
+
     }
 
-    public void uploadPhotoFail(){
+    public void generateSignInfoAndUpload(){
+        int cid = Integer.parseInt(category.getName());
+        JsonSignInfo jsonSignInfo = AsyncHttpHelper.user.getJsonCoursesMap().get(cid).getSignInfos().get(sid);
+        String signDetail = jsonSignInfo.getSignDetail();
+        if(signDetail == null || signDetail.equals("")){
+            jsonSignInfo.setSignDetail(Long.toString(System.currentTimeMillis()/1000));
+        }else{
+            jsonSignInfo.setSignDetail(signDetail+","+System.currentTimeMillis()/1000);
+        }
+        jsonSignInfo.setLastSignPhoto(QI_NIU_DOMAIN + sid);
+        jsonSignInfo.setSignTimes(jsonSignInfo.getSignId() + 1);
+        AsyncHttpHelper.uploadSignInfo(this,jsonSignInfo);
+    }
+
+    /**when sign done,The @AsyncHttpHelper calls it.*/
+    public void onSignSuccess(){
+        Toast.makeText(this, "签到成功咯!", Toast.LENGTH_LONG).show();
+    }
+
+    public void uploadPhotoFail() {
         //TODO
         progressBar.setVisibility(View.INVISIBLE);
-        Toast.makeText(this,"上传照片失败啦抱歉,再试试吧",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "上传照片失败啦抱歉,再试试吧", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -463,7 +485,7 @@ public class QuizActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("quiz","onDestory() executed!!");
+        Log.d("quiz", "onDestory() executed!!");
     }
 
     @Override

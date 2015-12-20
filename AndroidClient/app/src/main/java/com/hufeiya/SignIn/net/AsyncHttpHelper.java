@@ -10,11 +10,13 @@ import com.hufeiya.SignIn.activity.QuizActivity;
 import com.hufeiya.SignIn.application.MyApplication;
 import com.hufeiya.SignIn.fragment.CategorySelectionFragment;
 import com.hufeiya.SignIn.fragment.SignInFragment;
+import com.hufeiya.SignIn.jsonObject.JsonSignInfo;
 import com.hufeiya.SignIn.jsonObject.JsonUser;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
+import com.loopj.android.http.RequestParams;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
@@ -158,15 +160,37 @@ public class AsyncHttpHelper {
                     uploadManager.put(photoBytes, signId, token, new UpCompletionHandler() {
                         @Override
                         public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
-                            ((QuizActivity)context).uploadPhotoSuccess();
+                            ((QuizActivity) context).uploadPhotoSuccess();
                         }
-                    },null);
+                    }, null);
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 ((QuizActivity)context).uploadPhotoFail();
+            }
+        });
+    }
+
+    public static void uploadSignInfo(final Context context,JsonSignInfo jsonSignInfo){
+        String httpParameters="signin";
+        RequestParams requestParams = new RequestParams();
+        String json = new Gson().toJson(jsonSignInfo);
+        requestParams.add("signInfo",json);
+        client.post(serverURL + httpParameters, requestParams, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String response = new String(responseBody);
+                if (response.equals("true")) {
+                    ((QuizActivity) context).onSignSuccess();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                //TODO can also return {banned,null}
+                ((QuizActivity) context).toastNetUnavalible();
             }
         });
     }

@@ -43,6 +43,7 @@ public class JsonSignInfo {
 		this.signTimes = s.getSignTimes();
 		this.lastSignPhoto = s.getLastSignPhoto();
 	}
+	
 	// Property accessors
 
 	public Integer getSignId() {
